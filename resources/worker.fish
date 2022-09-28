@@ -20,7 +20,7 @@ function _vscode_complete
             printf 'complete %s\t' File >&9
         else if test -d "$normalized"
             printf 'complete %s\t' Folder >&9
-        else if functions -q "$content"
+        else if type -q "$content"
             printf 'complete %s\t' Function >&9
         else
             switch "$content"
