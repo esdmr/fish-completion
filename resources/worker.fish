@@ -8,8 +8,6 @@ end
 
 function _vscode_complete
     commandline (string unescape --style url -- "$argv")
-    echo debug:text "$argv" >&9
-    echo debug:full (commandline) >&9
     echo current (commandline -t) >&9
 
     for line in (complete -C)
