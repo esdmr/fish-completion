@@ -14,23 +14,24 @@ function _vscode_complete
 
     for line in (complete -C)
         set content (string match -r '^.+?(?:\\t|$)' -- $line)
-        set normalized (eval echo\ (string escape --style url -- $content) | string unescape --style url)
 
-        if test -f "$normalized"
-            printf 'complete %s\t' File >&9
-        else if test -d "$normalized"
-            printf 'complete %s\t' Folder >&9
-        else if type -q "$content"
-            printf 'complete %s\t' Function >&9
-        else
-            switch "$content"
-                case if for while break continue function return begin end and or not switch case
-                    printf 'complete %s\t' Keyword >&9
-                case '$*'
-                    printf 'complete %s\t' Variable >&9
-                case '*'
+        switch "$content"
+            case if for while break continue function return begin end and or not switch case
+                printf 'complete %s\t' Keyword >&9
+            case '$*'
+                printf 'complete %s\t' Variable >&9
+            case '*'
+                set -l normalized (eval echo\ (string escape --style url -- $content) | string unescape --style url)
+
+                if test -f "$normalized"
+                    printf 'complete %s\t' File >&9
+                else if test -d "$normalized"
+                    printf 'complete %s\t' Folder >&9
+                else if type -q "$content"
+                    printf 'complete %s\t' Function >&9
+                else
                     printf 'complete %s\t' Text >&9
-            end
+                end
         end
 
         echo $line >&9
