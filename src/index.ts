@@ -3,16 +3,17 @@ import {createInterface} from 'node:readline';
 import {fileURLToPath} from 'node:url';
 import {execa} from 'execa';
 import vscode from 'vscode';
-import logger from './logger.js';
 
 const disposables = new Set<vscode.Disposable>();
-
 const fishScript = `fish -iC 'source (string unescape --style url -- "${encodeURIComponent(fileURLToPath(new URL('worker.fish', import.meta.url)))}")'`;
+const output = vscode.window.createOutputChannel('Fish Completion');
+disposables.add(output);
 
 export function activate(_context: vscode.ExtensionContext) {
-	logger.log('Activated');
+	output.appendLine('Activated');
+
 	disposables.add(vscode.languages.registerCompletionItemProvider('fish', {
-		async provideCompletionItems(document, position, token, context) {
+		async provideCompletionItems(document, position, token) {
 			if (token.isCancellationRequested) {
 				return;
 			}
@@ -55,10 +56,10 @@ export function activate(_context: vscode.ExtensionContext) {
 			});
 			const rl = createInterface((child.stdio as any[])[9]);
 
-			logger.log('Requested', {text, completions, child, context});
+			output.appendLine('Request: ' + text.slice(text.lastIndexOf('\n') + 1));
 
 			rl.on('line', line => {
-				logger.log('Got line', line);
+				output.appendLine('Line: ' + line);
 				if (line.includes('ready')) {
 					child.stdin!.write(`_vscode_complete "${encodeURIComponent(text)}"\n`);
 				} else if (line.startsWith('complete ')) {
@@ -73,7 +74,7 @@ export function activate(_context: vscode.ExtensionContext) {
 			try {
 				await child;
 			} catch (error) {
-				logger.log('Error', error);
+				output.appendLine('Error: ' + String(error));
 
 				if (String(error).includes('Command failed')) {
 					return [];
@@ -82,7 +83,7 @@ export function activate(_context: vscode.ExtensionContext) {
 				throw error;
 			}
 
-			logger.log('Done', completions);
+			output.appendLine('Done');
 			return completions.map(item => {
 				const [type, label = '', ...parts] = item.split('\t');
 				let kind;
@@ -126,7 +127,7 @@ export function activate(_context: vscode.ExtensionContext) {
 }
 
 export function deactivate() {
-	logger.log('Deactivated');
+	output.appendLine('Deactivated');
 
 	for (const item of disposables) {
 		item.dispose();
