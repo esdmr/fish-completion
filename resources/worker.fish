@@ -11,7 +11,7 @@ function _vscode_complete
     echo current (commandline -t) >&9
 
     for line in (complete -C)
-        set content (string match -r '^.+?(?:\\t|$)' -- $line)
+        set content (string match -r '^.+?(?=\\t|$)' -- $line)
 
         switch "$content"
             case if for while break continue function return begin end and or not switch case
