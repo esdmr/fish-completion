@@ -5,6 +5,7 @@
 .package.dev.json
 .vscode-test
 .vscode/**
+.github
 .xo-config.json
 .xo-config.ts.json
 **/.eslintrc.json
