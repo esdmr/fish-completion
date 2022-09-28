@@ -22,7 +22,7 @@ export function activate(_context: vscode.ExtensionContext) {
 			let currentToken = '';
 			const completions: string[] = [];
 
-			const child = execa('script', ['-e', '-q', '-c', fishScript], {
+			const child = execa('script', ['-e', '-q', '-c', fishScript, '/dev/null'], {
 				stdio: [
 					'pipe', // 0 stdin
 					'pipe', // 1 stdout
