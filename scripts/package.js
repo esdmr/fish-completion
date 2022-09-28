@@ -9,7 +9,7 @@ const options = {
 await execaCommand('node scripts/prepack.js', options);
 
 try {
-	await execaCommand('pnpx vsce package --no-dependencies', options);
+	await execaCommand('pnpm exec vsce package --no-dependencies', options);
 } finally {
 	await execaCommand('node scripts/postpack.js', options);
 }
