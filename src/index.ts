@@ -5,7 +5,7 @@ import {execa} from 'execa';
 import vscode from 'vscode';
 
 const disposables = new Set<vscode.Disposable>();
-const fishScript = `fish -iC 'source (string unescape --style url -- "${encodeURIComponent(fileURLToPath(new URL('worker.fish', import.meta.url)))}")'`;
+const fishScript = `fish -iPC 'source (string unescape --style url -- "${encodeURIComponent(fileURLToPath(new URL('worker.fish', import.meta.url)))}")'`;
 const output = vscode.window.createOutputChannel('Fish Completion');
 disposables.add(output);
 
