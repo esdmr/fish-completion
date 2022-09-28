@@ -1,0 +1,48 @@
+{
+	"rules": {
+		"no-await-in-loop": "off",
+		"unicorn/prefer-json-parse-buffer": [
+			"off"
+		]
+	},
+	"overrides": [
+		{
+			"files": "**.ts",
+			"extends": "./.xo-config.ts.json"
+		},
+		{
+			"files": "**.tsx",
+			"extends": "./.xo-config.ts.json"
+		},
+		{
+			"files": "**.mts",
+			"extends": "./.xo-config.ts.json"
+		},
+		{
+			"files": "**.cts",
+			"extends": "./.xo-config.ts.json",
+			"rules": {
+				"unicorn/prefer-module": "off"
+			}
+		},
+		{
+			"files": "**.cjs",
+			"rules": {
+				"unicorn/prefer-module": "off"
+			}
+		},
+		{
+			"files": "src/extension/**",
+			"env": [
+				"node",
+				"worker"
+			]
+		},
+		{
+			"files": "rollup/**",
+			"env": [
+				"node"
+			]
+		}
+	]
+}

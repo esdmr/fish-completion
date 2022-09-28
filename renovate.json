@@ -1,0 +1,114 @@
+{
+	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
+	"extends": [
+		"config:js-lib",
+		"helpers:pinGitHubActionDigests",
+		":ignoreUnstable"
+	],
+	"labels": [
+		"renovate"
+	],
+	"major": {
+		"automerge": false
+	},
+	"minor": {
+		"automerge": true
+	},
+	"patch": {
+		"automerge": true
+	},
+	"pin": {
+		"automerge": true
+	},
+	"digest": {
+		"automerge": true
+	},
+	"lockFileMaintenance": {
+		"enabled": true,
+		"addLabels": [
+			"renovate/lockfile"
+		],
+		"schedule": "at 12am on thursday",
+		"automerge": true
+	},
+	"npm": {
+		"stabilityDays": 21
+	},
+	"stabilityDays": 21,
+	"timezone": "Asia/Tehran",
+	"packageRules": [
+		{
+			"matchDepTypes": [
+				"devDependencies"
+			],
+			"addLabels": [
+				"renovate/development"
+			]
+		},
+		{
+			"matchDepTypes": [
+				"dependencies",
+				"optionalDependencies",
+				"peerDependencies"
+			],
+			"addLabels": [
+				"renovate/production"
+			]
+		},
+		{
+			"matchPackageNames": [
+				"@istanbuljs/esm-loader-hook",
+				"@types/tap",
+				"c8",
+				"tap"
+			],
+			"addLabels": [
+				"renovate/testing"
+			],
+			"groupName": "testing"
+		},
+		{
+			"matchPackagePatterns": [
+				"^typescript$",
+				"^@types/"
+			],
+			"addLabels": [
+				"renovate/typescript"
+			]
+		},
+		{
+			"description": "node: prefixes are only supported in version 16 of @types/node",
+			"matchPackageNames": [
+				"@types/node"
+			],
+			"allowedVersions": "^16.0.0"
+		},
+		{
+			"matchPackageNames": [
+				"@microsoft/api-documenter",
+				"@microsoft/api-extractor",
+				"katex",
+				"@types/vscode"
+			],
+			"enabled": false
+		},
+		{
+			"matchDepTypes": [
+				"dependencies",
+				"optionalDependencies",
+				"peerDependencies"
+			],
+			"matchUpdateTypes": [
+				"minor"
+			],
+			"automerge": false
+		},
+		{
+			"matchManagers": [
+				"github-actions"
+			],
+			"schedule": "at 12am on thursday",
+			"automerge": false
+		}
+	]
+}

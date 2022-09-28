@@ -1,0 +1,9 @@
+.vscode
+!.vscode/launch.json
+*.vsix
+node_modules
+out
+resources/**/*.css
+resources/**/*.css.map
+resources/**/*.js
+resources/**/*.js.map

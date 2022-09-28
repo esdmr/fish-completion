@@ -1,0 +1,55 @@
+# This workflow will do a clean install of node dependencies, build the source
+# code and run lints and tests.
+
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  lint:
+    name: CI
+    strategy:
+      matrix:
+        node:
+          - '16'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@7884fcad6b5d53d10323aee724dc68d8b9096a2e # tag=v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@1f8c6b94b26d0feae1e387ca63ccbdc44d27b561 # renovate: tag=v2
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Setup pnpm
+        run: |-
+          corepack enable
+          pnpm --version
+
+      - name: Set pnpm store-dir
+        run: pnpm config set store-dir ~/.pnpm-store
+
+      - name: Cache pnpm modules
+        uses: actions/cache@937d24475381cd9c75ae6db12cb4e79714b926ed # renovate: tag=v2
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.OS }}-pnpm-current-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.OS }}-pnpm-current
+
+      - name: Install packages
+        run: pnpm install
+
+      - name: Build
+        run: pnpm run build
+
+      - name: Run linter
+        run: pnpm run lint

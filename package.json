@@ -1,0 +1,70 @@
+{
+	"name": "fish-completion",
+	"displayName": "Fish completion",
+	"version": "0.0.1",
+	"description": "Intellisense for fish scripts",
+	"categories": [
+		"Other"
+	],
+	"homepage": "https://github.com/esdmr/fish-completion#readme",
+	"bugs": "https://github.com/esdmr/fish-completion/issues",
+	"repository": "https://github.com/esdmr/fish-completion",
+	"license": "MIT",
+	"author": "Saeed M Rad <esdmr0@gmail.com> (https://github.com/esdmr)",
+	"publisher": "esdmr",
+	"main": "./resources/extension.js",
+	"scripts": {
+		"build": "pnpm run build:extension",
+		"build:extension": "rollup --config rollup/extension.js",
+		"changeset": "changeset",
+		"changeset:version": "changeset version",
+		"clean": "bash scripts/clean.sh",
+		"preinstall": "npx -y only-allow pnpm",
+		"lint": "xo src rollup scripts",
+		"lint:fix": "pnpm run lint -- --fix",
+		"prepack": "node scripts/prepack.js",
+		"postpack": "node scripts/postpack.js",
+		"package": "node scripts/package.js",
+		"vscode:prepublish": "echo You may not run vsce directly. Use: pnpm run package && exit 1",
+		"watch": "pnpm run watch:extension",
+		"watch:extension": "pnpm run build:extension -- --watch"
+	},
+	"activationEvents": [
+		"onLanguage:fish"
+	],
+	"devDependencies": {
+		"@changesets/cli": "2.24.4",
+		"@rollup/plugin-commonjs": "22.0.2",
+		"@rollup/plugin-node-resolve": "14.1.0",
+		"@types/node": "16",
+		"@types/vscode": "1.70.0",
+		"esbuild": "0.15.9",
+		"execa": "6.1.0",
+		"rollup": "2.79.1",
+		"rollup-plugin-esbuild": "4.10.1",
+		"rollup-plugin-string": "3.0.0",
+		"vsce": "2.11.0",
+		"xo": "0.52.3"
+	},
+	"packageManager": "pnpm@6.32.3",
+	"engines": {
+		"node": ">=16",
+		"vscode": "^1.65.0"
+	},
+	"capabilities": {
+		"untrustedWorkspaces": {
+			"supported": false
+		}
+	},
+	"pnpm": {
+		"packageExtensions": {
+			"eslint-import-resolver-webpack": {
+				"peerDependenciesMeta": {
+					"webpack": {
+						"optional": true
+					}
+				}
+			}
+		}
+	}
+}
