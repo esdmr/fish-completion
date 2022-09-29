@@ -1,7 +1,7 @@
 {
 	"name": "fish-completion",
 	"displayName": "Fish completion",
-	"version": "0.0.1",
+	"version": "0.0.2",
 	"description": "Intellisense for fish scripts",
 	"categories": [
 		"Other"
@@ -13,7 +13,7 @@
 	"author": "Saeed M Rad <esdmr0@gmail.com> (https://github.com/esdmr)",
 	"publisher": "esdmr",
 	"main": "./resources/extension.js",
-	"icon": "https://raw.githubusercontent.com/esdmr/box-drawing-sidebar/v0.0.1/resources/icon.png",
+	"icon": "resources/icon.png",
 	"scripts": {
 		"build": "pnpm run build:extension",
 		"build:extension": "rollup --config rollup/extension.js",
