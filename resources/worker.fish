@@ -1,17 +1,27 @@
-set -g _started 0
-
 function fish_prompt
-    test $_started = 0
-    and echo ready >&9
-    and set -g _started 1
+    echo ready >&9
+
+    function fish_prompt
+        # Empty
+    end
 end
 
-function _vscode_complete
-    commandline (string unescape --style url -- "$argv")
-    echo current (commandline -t) >&9
+function _trace
+    set old_status $status
+    status stack-trace >&9
+    return $old_status
+end
 
-    for line in (complete -C --escape)
-        set -l content (string match -r '^.+?(?=\\t|$)' -- $line)
+set -q _vscode_dir || exit (_trace)
+
+function _vscode_complete
+    commandline (cat $_vscode_dir/text) || return (_trace)
+    echo current (commandline -t) >&9 || return (_trace)
+    set completions (complete -C --escape) || return (_trace)
+    commandline '' || return (_trace)
+
+    for line in $completions
+        set -l content (string match -r '^.+?(?=\\t|$)' -- $line) || return (_trace)
         set -l type Text
 
         switch "$content"
@@ -20,7 +30,7 @@ function _vscode_complete
             case '$*'
                 set type Variable
             case '*'
-                set -l normalized (eval echo\ --\ (string escape --style url -- $content) | string unescape --style url)
+                set -l normalized (eval echo\ --\ (string escape --style url -- $content) | string unescape --style url) || return (_trace)
 
                 if test -f "$normalized"
                     set type File
@@ -34,5 +44,7 @@ function _vscode_complete
         printf 'complete %s\t%s\n' "$type" "$line" >&9
     end
 
-    exit 0
+    return 0
 end
+
+bind e '_vscode_complete; exit'
