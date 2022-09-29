@@ -13,6 +13,7 @@
 	"author": "Saeed M Rad <esdmr0@gmail.com> (https://github.com/esdmr)",
 	"publisher": "esdmr",
 	"main": "./resources/extension.js",
+	"icon": "https://raw.githubusercontent.com/esdmr/box-drawing-sidebar/v0.0.1/resources/icon.png",
 	"scripts": {
 		"build": "pnpm run build:extension",
 		"build:extension": "rollup --config rollup/extension.js",
