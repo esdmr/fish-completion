@@ -12,10 +12,10 @@ function _trace
     return $old_status
 end
 
-set -q _vscode_dir || exit (_trace)
+set -q _dir || exit (_trace)
 
-function _vscode_complete
-    commandline (cat $_vscode_dir/text) || return (_trace)
+function _complete
+    commandline (cat $_dir/text) || return (_trace)
     echo current (commandline -t) >&9 || return (_trace)
     set completions (complete -C --escape) || return (_trace)
     commandline '' || return (_trace)
@@ -47,4 +47,4 @@ function _vscode_complete
     return 0
 end
 
-bind e '_vscode_complete; exit'
+bind e '_complete; exit'

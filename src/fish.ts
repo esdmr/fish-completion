@@ -9,7 +9,7 @@ import type {OutputChannel} from 'vscode';
 
 export const temporaryDir = mkdtempSync(join(tmpdir(), 'fish-completion-'));
 
-const fishScript = `fish -iPC 'set -g _vscode_dir (string unescape --style url -- "${encodeURIComponent(temporaryDir)}"); source (string unescape --style url -- "${encodeURIComponent(fileURLToPath(new URL('worker.fish', import.meta.url)))}")'`;
+const fishScript = `fish -iPC 'set -g _dir (string unescape --style url -- "${encodeURIComponent(temporaryDir)}"); source (string unescape --style url -- "${encodeURIComponent(fileURLToPath(new URL('worker.fish', import.meta.url)))}")'`;
 
 export async function completeCommand(options: {
 	cwd: string;
