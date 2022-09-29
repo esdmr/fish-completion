@@ -91,6 +91,8 @@ export async function completeCommand(options: {
 		}
 
 		throw error;
+	} finally {
+		await writeFile(join(temporaryDir, 'text'), '', 'utf8');
 	}
 
 	options.output.appendLine('Done');
