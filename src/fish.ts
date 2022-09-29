@@ -9,8 +9,6 @@ import type {OutputChannel} from 'vscode';
 
 export const temporaryDir = mkdtempSync(join(tmpdir(), 'fish-completion-'));
 
-const fishScript = `fish -iPC 'set -g _dir (string unescape --style url -- "${encodeURIComponent(temporaryDir)}"); source (string unescape --style url -- "${encodeURIComponent(fileURLToPath(new URL('worker.fish', import.meta.url)))}")'`;
-
 export async function completeCommand(options: {
 	cwd: string;
 	text: string;
@@ -22,7 +20,7 @@ export async function completeCommand(options: {
 	let currentToken = '';
 	const completions: string[] = [];
 
-	const child = execa('script', ['-e', '-q', '-c', fishScript, '/dev/null'], {
+	const child = execa('script', ['-e', '-q', '-c', 'fish -iPC \'set -g _dir $_FISH_COMPLETION_TEMP_DIR; source $_FISH_COMPLETION_WORKER\'', '/dev/null'], {
 		stdio: [
 			'pipe', // 0 stdin
 			'pipe', // 1 stdout
@@ -49,6 +47,8 @@ export async function completeCommand(options: {
 			VSCODE_GIT_IPC_HANDLE: undefined,
 			EDITOR: undefined,
 			VSCODE_GIT_ASKPASS_EXTRA_ARGS: undefined,
+			_FISH_COMPLETION_TEMP_DIR: temporaryDir,
+			_FISH_COMPLETION_WORKER: fileURLToPath(new URL('worker.fish', import.meta.url)),
 			/* eslint-enable @typescript-eslint/naming-convention */
 		},
 		timeout: 10_000,
