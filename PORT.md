@@ -77,3 +77,12 @@ Once `ready` was received on the output channel, it will send `e` to stdin.
 
 By collecting every line on the output channel starting with `current` or
 `complete`, the extension can provide the completion entries to the editor.
+
+## Updating completions
+
+Since the extension uses fish completions, it may provide a command to run
+`fish_update_completions` for convenience.
+
+The extension may parse the output of `fish_update_completions` and show the
+progress to the user. If not, the extension should either show the live output,
+or notify when the command finishes.

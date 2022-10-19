@@ -12,9 +12,8 @@ function _trace
     return $old_status
 end
 
-set -q _dir || exit (_trace)
-
 function _complete
+    set -q _dir || exit (_trace)
     commandline (cat $_dir/text) || return (_trace)
     echo current (commandline -t) >&9 || return (_trace)
     set completions (complete -C --escape) || return (_trace)
@@ -47,4 +46,9 @@ function _complete
     return 0
 end
 
+function _update
+    fish_update_completions >&9 || _trace
+end
+
 bind e '_complete; exit'
+bind u '_update; exit'

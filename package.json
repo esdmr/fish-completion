@@ -30,8 +30,17 @@
 		"watch": "pnpm run watch:extension",
 		"watch:extension": "pnpm run build:extension -- --watch"
 	},
+	"contributes": {
+		"commands": [
+			{
+				"command": "fish-completion.fish_update_completions",
+				"title": "Update fish completions"
+			}
+		]
+	},
 	"activationEvents": [
-		"onLanguage:fish"
+		"onLanguage:fish",
+		"onCommand:fish-completion.fish_update_completions"
 	],
 	"devDependencies": {
 		"@changesets/cli": "2.24.4",
