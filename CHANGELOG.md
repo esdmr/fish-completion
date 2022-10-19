@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.0
+
+### Minor Changes
+
+- aad2b84: Add `fish_update_completions` command (#12)
+
 ## 0.0.2
 
 ### Patch Changes
