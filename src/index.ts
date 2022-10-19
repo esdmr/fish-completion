@@ -2,7 +2,7 @@ import {rmSync} from 'node:fs';
 import {dirname} from 'node:path';
 import vscode from 'vscode';
 import {vscodeAbortController} from './abort.js';
-import {completeCommand, temporaryDir} from './fish.js';
+import {completeCommand, temporaryDir, updateCompletions} from './fish.js';
 
 const disposables = new Set<vscode.Disposable>();
 const output = vscode.window.createOutputChannel('Fish Completion');
@@ -75,6 +75,50 @@ export function activate(_context: vscode.ExtensionContext) {
 			}
 		},
 	}));
+
+	disposables.add(vscode.commands.registerCommand('fish-completion.fish_update_completions', () => vscode.window.withProgress({
+		location: vscode.ProgressLocation.Notification,
+		cancellable: true,
+		title: 'Updating fish completions',
+	}, async (progress, token) => {
+		const {signal, dispose} = vscodeAbortController(token);
+
+		progress.report({
+			increment: 0,
+		});
+
+		let currentProgress = 0;
+
+		try {
+			await updateCompletions({
+				output,
+				signal,
+				callback(state) {
+					const percentage = state.progress / state.total * 100;
+
+					progress.report({
+						increment: percentage - currentProgress,
+						message: `${state.progress}/${state.total} - ${state.current}`,
+					});
+
+					currentProgress = percentage;
+				},
+			});
+		} catch (error) {
+			const string = String(error);
+
+			if (string.includes('AbortError')) {
+				output.appendLine('Aborted');
+				return;
+			}
+
+			output.appendLine('Error: ' + string);
+
+			void vscode.window.showErrorMessage('Something gone wrong while updating fish completions.');
+		} finally {
+			dispose();
+		}
+	})));
 }
 
 export function deactivate() {
