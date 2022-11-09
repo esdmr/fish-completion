@@ -13,7 +13,7 @@ specifiers:
   rollup: 2.79.1
   rollup-plugin-esbuild: 4.10.1
   rollup-plugin-string: 3.0.0
-  vsce: 2.11.0
+  vsce: 2.12.0
   xo: 0.52.4
 
 devDependencies:
@@ -27,7 +27,7 @@ devDependencies:
   rollup: 2.79.1
   rollup-plugin-esbuild: 4.10.1_esbuild@0.15.11+rollup@2.79.1
   rollup-plugin-string: 3.0.0
-  vsce: 2.11.0
+  vsce: 2.12.0
   xo: 0.52.4
 
 packages:
@@ -2139,7 +2139,7 @@ packages:
     dev: true
 
   /github-from-package/0.0.0:
-    resolution: {integrity: sha1-l/tdlr/eiXMxPyDoKI75oWf6ZM4=}
+    resolution: {integrity: sha512-SyHy3T1v2NUXn29OsWdxmK6RwHD+vkj3v8en8AOBZ1wBQ/hCAQ5bAQTD02kW4W9tUp/3Qh6J8r9EvntiyCmOOw==}
     dev: true
 
   /glob-parent/5.1.2:
@@ -4055,8 +4055,8 @@ packages:
       spdx-expression-parse: 3.0.1
     dev: true
 
-  /vsce/2.11.0:
-    resolution: {integrity: sha512-pr9Y0va/HCer0tTifeqaUrK24JJSpRd6oLeF/PY6FtrY41e+lwxiAq6jfMXx4ShAZglYg2rFKoKROwa7E7SEqQ==}
+  /vsce/2.12.0:
+    resolution: {integrity: sha512-PKBjIsZxZbm6I4hpikkUX7CNh7UpPflDm3aCCBCFn3ffzQlyUNCQOcaObrhMkRNy4xyvL4hs7ryhE3IKQ6FTIQ==}
     engines: {node: '>= 14'}
     hasBin: true
     dependencies:
