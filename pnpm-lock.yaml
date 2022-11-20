@@ -6,7 +6,7 @@ specifiers:
   '@changesets/cli': 2.25.1
   '@rollup/plugin-commonjs': 22.0.2
   '@rollup/plugin-node-resolve': 14.1.0
-  '@types/node': 16.18.2
+  '@types/node': 16.18.3
   '@types/vscode': 1.70.0
   esbuild: 0.15.12
   execa: 6.1.0
@@ -20,7 +20,7 @@ devDependencies:
   '@changesets/cli': 2.25.1
   '@rollup/plugin-commonjs': 22.0.2_rollup@2.79.1
   '@rollup/plugin-node-resolve': 14.1.0_rollup@2.79.1
-  '@types/node': 16.18.2
+  '@types/node': 16.18.3
   '@types/vscode': 1.70.0
   esbuild: 0.15.12
   execa: 6.1.0
@@ -431,8 +431,8 @@ packages:
     resolution: {integrity: sha512-J8xLz7q2OFulZ2cyGTLE1TbbZcjpno7FaN6zdJNrgAdrJ+DZzh/uFR6YrTb4C+nXakvud8Q4+rbhoIWlYQbUFQ==}
     dev: true
 
-  /@types/node/16.18.2:
-    resolution: {integrity: sha512-KIGQJyya+opDCFvDSZMNNS899ov5jlNdtN7PypgHWeb8e+5vWISdwTRo/ClsNVlmDihzOGqFyNBDamUs7TQQCA==}
+  /@types/node/16.18.3:
+    resolution: {integrity: sha512-jh6m0QUhIRcZpNv7Z/rpN+ZWXOicUUQbSoWks7Htkbb9IjFQj4kzcX/xFCkjstCj5flMsN8FiSvt+q+Tcs4Llg==}
     dev: true
 
   /@types/normalize-package-data/2.4.1:
@@ -446,7 +446,7 @@ packages:
   /@types/resolve/1.17.1:
     resolution: {integrity: sha512-yy7HuzQhj0dhGpD8RLXSZWEkLsV9ibvxvi6EiJ3bkqLAO1RGo0WbkWQiwpRlSFymTJRz0d3k5LM3kkx8ArDbLw==}
     dependencies:
-      '@types/node': 16.18.2
+      '@types/node': 16.18.3
     dev: true
 
   /@types/semver/6.2.3:
