@@ -51,7 +51,7 @@
 		"esbuild": "0.15.13",
 		"execa": "6.1.0",
 		"rollup": "2.79.1",
-		"rollup-plugin-esbuild": "4.10.2",
+		"rollup-plugin-esbuild": "4.10.3",
 		"rollup-plugin-string": "3.0.0",
 		"vsce": "2.14.0",
 		"xo": "0.52.4"
