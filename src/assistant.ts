@@ -36,9 +36,7 @@ class AssistantResult {
 			...[...this.functions].map(
 				(name) => `function ${name} -d 'detected function';end`,
 			),
-			...[...this.variables].map(
-				(name) => `set ${name} 'detected variable'`,
-			),
+			...[...this.variables].map((name) => `set -g ${name}`),
 		].join('\n');
 	}
 
