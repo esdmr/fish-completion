@@ -84,11 +84,17 @@
 			"allowedVersions": "^16.0.0"
 		},
 		{
+			"description": "node: @types/vscode is supposed to match engines",
+			"matchPackageNames": [
+				"@types/vscode"
+			],
+			"allowedVersions": "~1.75.0"
+		},
+		{
 			"matchPackageNames": [
 				"@microsoft/api-documenter",
 				"@microsoft/api-extractor",
-				"katex",
-				"@types/vscode"
+				"katex"
 			],
 			"enabled": false
 		},
