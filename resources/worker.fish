@@ -6,56 +6,56 @@ function fish_prompt
     end
 end
 
-function _trace
-    set old_status $status
+function __worker_trace
+    set __worker_old_status $status
     status stack-trace >&9
-    return $old_status
+    return $__worker_old_status
 end
 
-function _complete
-    set -q _dir || exit (_trace)
+function __worker_complete
+    set -q _FISH_COMPLETION_TEMP_DIR || exit (__worker_trace)
 
     # Experimental assistant v1
     test "$_FISH_COMPLETION_ASSIST" = v1
     and begin
-        source $_dir/cmd || return (_trace)
+        source $_FISH_COMPLETION_TEMP_DIR/cmd || return (__worker_trace)
     end
 
-    commandline (cat $_dir/text) || return (_trace)
-    echo current (commandline -t) >&9 || return (_trace)
-    set completions (complete -C --escape) || return (_trace)
-    commandline '' || return (_trace)
+    commandline (cat $_FISH_COMPLETION_TEMP_DIR/text) || return (__worker_trace)
+    echo current (commandline -t) >&9 || return (__worker_trace)
+    set __worker_completions (complete -C --escape) || return (__worker_trace)
+    commandline '' || return (__worker_trace)
 
-    for line in $completions
-        set -l content (string match -r '^.+?(?=\\t|$)' -- $line) || return (_trace)
-        set -l type Text
+    for __worker_line in $__worker_completions
+        set -l __worker_content (string match -r '^.+?(?=\\t|$)' -- $__worker_line) || return (__worker_trace)
+        set -l __worker_type Text
 
-        switch "$content"
+        switch "$__worker_content"
             case if for while break continue function return begin end and or not switch case
-                set type Keyword
+                set __worker_type Keyword
             case '$*'
-                set type Variable
+                set __worker_type Variable
             case '*'
-                set -l normalized (eval echo\ --\ (string escape --style url -- $content) | string unescape --style url) || return (_trace)
+                set -l __worker_normalized (eval echo\ --\ (string escape --style url -- $__worker_content) | string unescape --style url) || return (__worker_trace)
 
-                if test -f "$normalized"
-                    set type File
-                else if test -d "$normalized"
-                    set type Folder
-                else if type -q -- "$content"
-                    set type Function
+                if test -f "$__worker_normalized"
+                    set __worker_type File
+                else if test -d "$__worker_normalized"
+                    set __worker_type Folder
+                else if type -q -- "$__worker_content"
+                    set __worker_type Function
                 end
         end
 
-        printf 'complete %s\t%s\n' "$type" "$line" >&9
+        printf 'complete %s\t%s\n' "$__worker_type" "$__worker_line" >&9
     end
 
     return 0
 end
 
-function _update
-    fish_update_completions >&9 || _trace
+function __worker_update
+    fish_update_completions >&9 || __worker_trace
 end
 
-bind e '_complete; exit'
-bind u '_update; exit'
+bind e '__worker_complete; exit'
+bind u '__worker_update; exit'

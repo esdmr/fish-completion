@@ -1,4 +1,8 @@
 import vscode from 'vscode';
+import {
+	functionExcludeList,
+	variableExcludeList,
+} from './assistant-exclude-list.js';
 import {disposables} from './disposables.js';
 
 function getEndOfLine(eol: vscode.EndOfLine) {
@@ -20,7 +24,7 @@ function getEndOfLine(eol: vscode.EndOfLine) {
 // The name is marked as optional to avoid backtracking.
 const variablePattern = /^\s*set\s+(?:-[^\s&|<>;()]*\s+)*(?<name>\w+)?/;
 const functionPattern =
-	/^\s*function\s+(?:-[^\s&|<>;()]*\s+)*(?<name>[^/\s\\'"`$()<>&|;]+)?/;
+	/^\s*function\s+(?:-[^\s&|<>;()]*\s+)*(?<name>[\w[\].+-]+)?/;
 
 class AssistantResult {
 	version = 0;
@@ -48,14 +52,14 @@ class AssistantResult {
 		for (const line of lines) {
 			const functionName = functionPattern.exec(line)?.groups!.name;
 
-			if (functionName) {
+			if (functionName && !functionExcludeList.has(functionName)) {
 				this.functions.add(functionName);
 				continue;
 			}
 
 			const variableName = variablePattern.exec(line)?.groups!.name;
 
-			if (variableName) {
+			if (variableName && !variableExcludeList.has(variableName)) {
 				this.variables.add(variableName);
 				continue;
 			}
