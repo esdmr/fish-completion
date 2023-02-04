@@ -1,33 +1,41 @@
-import {fileURLToPath} from 'node:url';
-import {tmpdir} from 'node:os';
-import type {Readable} from 'node:stream';
 import {mkdtempSync, rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {createInterface} from 'node:readline';
+import type {Readable} from 'node:stream';
+import {fileURLToPath} from 'node:url';
 import {execa, type ExecaChildProcess} from 'execa';
-import {Disposable, type OutputChannel} from 'vscode';
+import vscode from 'vscode';
 import {disposables} from '../disposables.js';
 
 export const temporaryDir = mkdtempSync(join(tmpdir(), 'fish-completion-'));
 
 disposables.add(
-	new Disposable(() => {
+	new vscode.Disposable(() => {
 		rmSync(temporaryDir, {force: true, recursive: true});
 	}),
 );
 
+const safePath = /^(?:\/[\w.-]+)+$/;
+
 export function startWorker(options: {
 	cwd: string;
+	isAssistantEnabled?: boolean;
+	fishPath: string;
 	signal?: AbortSignal | undefined;
 	timeout?: number;
 }) {
+	if (!safePath.test(options.fishPath)) {
+		options.fishPath = 'fish';
+	}
+
 	const child = execa(
 		'script',
 		[
 			'-e',
 			'-q',
 			'-c',
-			"fish -iPC 'set -g _dir $_FISH_COMPLETION_TEMP_DIR; source $_FISH_COMPLETION_WORKER'",
+			`${options.fishPath} -iPC 'set -g _dir $_FISH_COMPLETION_TEMP_DIR; source $_FISH_COMPLETION_WORKER'`,
 			'/dev/null',
 		],
 		{
@@ -57,6 +65,9 @@ export function startWorker(options: {
 				VSCODE_GIT_IPC_HANDLE: undefined,
 				EDITOR: undefined,
 				VSCODE_GIT_ASKPASS_EXTRA_ARGS: undefined,
+				_FISH_COMPLETION_ASSIST: options.isAssistantEnabled
+					? 'v1'
+					: 'disabled',
 				_FISH_COMPLETION_TEMP_DIR: temporaryDir,
 				_FISH_COMPLETION_WORKER: fileURLToPath(
 					new URL('worker.fish', import.meta.url),
@@ -77,7 +88,7 @@ export function startWorker(options: {
 
 export function debugStdOutputAndError(
 	child: ExecaChildProcess,
-	output: OutputChannel,
+	output: vscode.OutputChannel,
 ) {
 	for (const channel of ['stdout', 'stderr'] as const) {
 		const rl = createInterface(child[channel]!);

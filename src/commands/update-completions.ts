@@ -1,5 +1,6 @@
 import vscode from 'vscode';
 import {vscodeAbortController} from '../abort.js';
+import {getFishPath} from '../config.js';
 import {disposables} from '../disposables.js';
 import {updateCompletions} from '../fish/update-completions.js';
 import {output} from '../output.js';
@@ -22,6 +23,7 @@ const command: Parameters<typeof vscode.window.withProgress>[1] = async (
 
 	try {
 		await updateCompletions({
+			fishPath: getFishPath(),
 			signal,
 			callback(state) {
 				const percentage = (state.progress / state.total) * 100;

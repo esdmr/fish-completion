@@ -14,6 +14,13 @@ end
 
 function _complete
     set -q _dir || exit (_trace)
+
+    # Experimental assistant v1
+    test "$_FISH_COMPLETION_ASSIST" = v1
+    and begin
+        source $_dir/cmd || return (_trace)
+    end
+
     commandline (cat $_dir/text) || return (_trace)
     echo current (commandline -t) >&9 || return (_trace)
     set completions (complete -C --escape) || return (_trace)
