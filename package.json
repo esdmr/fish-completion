@@ -39,8 +39,7 @@
 		]
 	},
 	"activationEvents": [
-		"onLanguage:fish",
-		"onCommand:fish-completion.fish_update_completions"
+		"onLanguage:fish"
 	],
 	"devDependencies": {
 		"@changesets/cli": "2.26.0",
@@ -59,7 +58,7 @@
 	"packageManager": "pnpm@6.35.1",
 	"engines": {
 		"node": ">=16",
-		"vscode": "^1.65.0"
+		"vscode": "^1.75.0"
 	},
 	"capabilities": {
 		"untrustedWorkspaces": {
