@@ -35,7 +35,7 @@ export function startWorker(options: {
 			'-e',
 			'-q',
 			'-c',
-			`${options.fishPath} -iPC 'set -g _dir $_FISH_COMPLETION_TEMP_DIR; source $_FISH_COMPLETION_WORKER'`,
+			`${options.fishPath} -iPC 'source $_FISH_COMPLETION_WORKER'`,
 			'/dev/null',
 		],
 		{
