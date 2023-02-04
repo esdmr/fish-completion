@@ -16,7 +16,7 @@ disposables.add(
 	}),
 );
 
-const safePath = /^(\/[\w.-]+)+$/;
+const safePath = /^(?:\/[\w.-]+)+$/;
 
 export function startWorker(options: {
 	cwd: string;
