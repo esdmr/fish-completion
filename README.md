@@ -18,6 +18,9 @@ This extension queries fish shell completions directly. The extension provides
 The text in the editor to `commandline` and then `complete -C` provides it with
 a list of completions and descriptions.
 
+> **Note**: There is an experimental variable and function completion in v0.2. You
+> can enable it in settings at `fish-completion.assistant.v1.enabled`.
+
 ## Requirements
 
 - [`script`][] executable in `$PATH` (to fake a TTY),
