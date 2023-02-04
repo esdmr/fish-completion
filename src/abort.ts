@@ -2,7 +2,7 @@ import type {CancellationToken} from 'vscode';
 
 export function vscodeAbortController(token: CancellationToken) {
 	const controller = new AbortController();
-	const subscription = token.onCancellationRequested(error => {
+	const subscription = token.onCancellationRequested((error) => {
 		controller.abort(error);
 		subscription.dispose();
 	});

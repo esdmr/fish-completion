@@ -5,6 +5,7 @@
 			"off"
 		]
 	},
+	"prettier": true,
 	"overrides": [
 		{
 			"files": "**.ts",
