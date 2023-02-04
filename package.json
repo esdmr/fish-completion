@@ -46,6 +46,11 @@
 					"pattern": "^(?:/[\\w.-]+)*$",
 					"default": "",
 					"ignoreSync": true
+				},
+				"fish-completion.assistant.v1.enabled": {
+					"type": "boolean",
+					"markdownDescription": "**EXPERIMENTAL!** Enable (non-semantic) variable/function name assistant. Will contain many false positives/negatives.",
+					"default": false
 				}
 			}
 		}

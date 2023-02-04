@@ -1,7 +1,8 @@
 import {dirname} from 'node:path';
 import vscode from 'vscode';
 import {vscodeAbortController} from '../abort.js';
-import {getFishPath} from '../config.js';
+import {getAssistantResult} from '../assistant.js';
+import {getFishPath, isAssistantEnabled} from '../config.js';
 import {disposables} from '../disposables.js';
 import {completeCommand} from '../fish/complete-command.js';
 import {output} from '../output.js';
@@ -18,6 +19,10 @@ const completionProvider: vscode.CompletionItemProvider = {
 		const {signal, dispose} = vscodeAbortController(token);
 
 		try {
+			const assistantCommands = isAssistantEnabled(document)
+				? getAssistantResult(document).getCommands()
+				: '';
+
 			const text = document.getText(
 				new vscode.Range(startOfDocument, position),
 			);
@@ -25,27 +30,22 @@ const completionProvider: vscode.CompletionItemProvider = {
 			const {completions, currentToken} = await completeCommand({
 				cwd: dirname(document.uri.fsPath),
 				fishPath: getFishPath(document),
+				assistantCommands,
 				text,
 				signal,
 			});
 
 			return completions.map((item) => {
 				const [type, label = '', ...parts] = item.split('\t');
+				const kind = getCompletionKind(type);
 
-				const completion = new vscode.CompletionItem(
-					{
-						label,
-						description: parts.join('\t'),
-					},
-					getCompletionKind(type),
-				);
-
-				completion.range = new vscode.Range(
-					position.translate(0, -currentToken.length),
+				return getCompletionItem({
+					label,
+					description: parts.join('\t'),
+					kind,
 					position,
-				);
-
-				return completion;
+					currentToken,
+				});
 			});
 		} catch (error) {
 			const string = String(error);
@@ -71,6 +71,29 @@ const completionProvider: vscode.CompletionItemProvider = {
 		}
 	},
 };
+
+function getCompletionItem(options: {
+	label: string;
+	description: string;
+	kind: vscode.CompletionItemKind;
+	position: vscode.Position;
+	currentToken: string;
+}) {
+	const completion = new vscode.CompletionItem(
+		{
+			label: options.label,
+			description: options.description,
+		},
+		options.kind,
+	);
+
+	completion.range = new vscode.Range(
+		options.position.translate(0, -options.currentToken.length),
+		options.position,
+	);
+
+	return completion;
+}
 
 function getCompletionKind(type: string | undefined) {
 	switch (type) {

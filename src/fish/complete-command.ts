@@ -7,16 +7,24 @@ import {debugStdOutputAndError, startWorker, temporaryDir} from './worker.js';
 export async function completeCommand(options: {
 	cwd: string;
 	fishPath: string;
+	assistantCommands: string;
 	text: string;
 	signal: AbortSignal;
 }) {
 	await writeFile(join(temporaryDir, 'text'), options.text, 'utf8');
+
+	await writeFile(
+		join(temporaryDir, 'cmd'),
+		options.assistantCommands,
+		'utf8',
+	);
 
 	let currentToken = '';
 	const completions: string[] = [];
 
 	const {child, inputChannel, outputChannel} = startWorker({
 		cwd: options.cwd,
+		isAssistantEnabled: options.assistantCommands !== '',
 		fishPath: options.fishPath,
 		signal: options.signal,
 	});
@@ -58,6 +66,7 @@ export async function completeCommand(options: {
 		throw error;
 	} finally {
 		await writeFile(join(temporaryDir, 'text'), '', 'utf8');
+		await writeFile(join(temporaryDir, 'cmd'), '', 'utf8');
 	}
 
 	output.appendLine('Done');
