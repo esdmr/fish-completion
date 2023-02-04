@@ -34,28 +34,34 @@ export function activate(_context: vscode.ExtensionContext) {
 					let kind;
 
 					switch (type) {
-						case 'File':
+						case 'File': {
 							kind = vscode.CompletionItemKind.File;
 							break;
+						}
 
-						case 'Folder':
+						case 'Folder': {
 							kind = vscode.CompletionItemKind.Folder;
 							break;
+						}
 
-						case 'Keyword':
+						case 'Keyword': {
 							kind = vscode.CompletionItemKind.Keyword;
 							break;
+						}
 
-						case 'Function':
+						case 'Function': {
 							kind = vscode.CompletionItemKind.Function;
 							break;
+						}
 
-						case 'Variable':
+						case 'Variable': {
 							kind = vscode.CompletionItemKind.Variable;
 							break;
+						}
 
-						default:
+						default: {
 							kind = vscode.CompletionItemKind.Text;
+						}
 					}
 
 					const completion = new vscode.CompletionItem({
