@@ -2,10 +2,11 @@ import {writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {createInterface} from 'node:readline';
 import {output} from '../output.js';
-import {temporaryDir, startWorker, debugStdOutputAndError} from './worker.js';
+import {debugStdOutputAndError, startWorker, temporaryDir} from './worker.js';
 
 export async function completeCommand(options: {
 	cwd: string;
+	fishPath: string;
 	text: string;
 	signal: AbortSignal;
 }) {
@@ -16,6 +17,7 @@ export async function completeCommand(options: {
 
 	const {child, inputChannel, outputChannel} = startWorker({
 		cwd: options.cwd,
+		fishPath: options.fishPath,
 		signal: options.signal,
 	});
 

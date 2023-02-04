@@ -3,6 +3,7 @@ import {output} from '../output.js';
 import {debugStdOutputAndError, startWorker} from './worker.js';
 
 export async function updateCompletions(options: {
+	fishPath: string;
 	signal?: AbortSignal;
 	callback: (state: {
 		readonly progress: number;
@@ -18,6 +19,7 @@ export async function updateCompletions(options: {
 
 	const {child, inputChannel, outputChannel} = startWorker({
 		cwd: '/',
+		fishPath: options.fishPath,
 		signal: options.signal,
 		timeout: 500_000,
 	});

@@ -1,6 +1,7 @@
 import {dirname} from 'node:path';
 import vscode from 'vscode';
 import {vscodeAbortController} from '../abort.js';
+import {getFishPath} from '../config.js';
 import {disposables} from '../disposables.js';
 import {completeCommand} from '../fish/complete-command.js';
 import {output} from '../output.js';
@@ -23,6 +24,7 @@ const completionProvider: vscode.CompletionItemProvider = {
 
 			const {completions, currentToken} = await completeCommand({
 				cwd: dirname(document.uri.fsPath),
+				fishPath: getFishPath(document),
 				text,
 				signal,
 			});

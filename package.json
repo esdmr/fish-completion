@@ -36,7 +36,19 @@
 				"command": "fish-completion.fish_update_completions",
 				"title": "Update fish completions"
 			}
-		]
+		],
+		"configuration": {
+			"title": "Fish completion",
+			"properties": {
+				"fish-completion.path.fish": {
+					"type": "string",
+					"markdownDescription": "Path to the `fish` command.",
+					"pattern": "^(/[\\w.-]+)*$",
+					"default": "",
+					"ignoreSync": true
+				}
+			}
+		}
 	},
 	"activationEvents": [
 		"onLanguage:fish"
