@@ -1,5 +1,0 @@
----
-"fish-completion": patch
----
-
-Refactor
