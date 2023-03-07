@@ -7,7 +7,7 @@ specifiers:
   '@rollup/plugin-commonjs': 22.0.2
   '@rollup/plugin-node-resolve': 14.1.0
   '@types/node': 16.18.12
-  '@types/vscode': 1.75.0
+  '@types/vscode': 1.75.1
   esbuild: 0.17.8
   execa: 6.1.0
   rollup: 2.79.1
@@ -21,7 +21,7 @@ devDependencies:
   '@rollup/plugin-commonjs': 22.0.2_rollup@2.79.1
   '@rollup/plugin-node-resolve': 14.1.0_rollup@2.79.1
   '@types/node': 16.18.12
-  '@types/vscode': 1.75.0
+  '@types/vscode': 1.75.1
   esbuild: 0.17.8
   execa: 6.1.0
   rollup: 2.79.1
@@ -634,8 +634,8 @@ packages:
     resolution: {integrity: sha512-21cFJr9z3g5dW8B0CVI9g2O9beqaThGQ6ZFBqHfwhzLDKUxaqTIy3vnfah/UPkfOiF2pLq+tGz+W8RyCskuslw==}
     dev: true
 
-  /@types/vscode/1.75.0:
-    resolution: {integrity: sha512-SAr0PoOhJS6FUq5LjNr8C/StBKALZwDVm3+U4pjF/3iYkt3GioJOPV/oB1Sf1l7lROe4TgrMyL5N1yaEgTWycw==}
+  /@types/vscode/1.75.1:
+    resolution: {integrity: sha512-emg7wdsTFzdi+elvoyoA+Q8keEautdQHyY5LNmHVM4PTpY8JgOTVADrGVyXGepJ6dVW2OS5/xnLUWh+nZxvdiA==}
     dev: true
 
   /@typescript-eslint/eslint-plugin/5.50.0_33b838c6f29e0454280dad39d7a39534:
