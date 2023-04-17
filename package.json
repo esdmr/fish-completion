@@ -72,7 +72,7 @@
 		"vsce": "2.15.0",
 		"xo": "0.53.1"
 	},
-	"packageManager": "pnpm@6.35.1",
+	"packageManager": "pnpm@7.30.5",
 	"engines": {
 		"node": ">=16",
 		"vscode": "^1.75.0"
