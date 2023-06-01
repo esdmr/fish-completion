@@ -61,7 +61,7 @@
 	"devDependencies": {
 		"@changesets/cli": "2.26.1",
 		"@rollup/plugin-commonjs": "22.0.2",
-		"@rollup/plugin-node-resolve": "14.1.0",
+		"@rollup/plugin-node-resolve": "15.0.2",
 		"@types/node": "16.18.29",
 		"@types/vscode": "1.75.1",
 		"esbuild": "0.17.18",
