@@ -20,7 +20,6 @@
 		"changeset": "changeset",
 		"changeset:version": "changeset version",
 		"clean": "bash scripts/clean.sh",
-		"preinstall": "npx -y only-allow pnpm",
 		"lint": "xo src rollup scripts",
 		"lint:fix": "pnpm run lint -- --fix",
 		"prepack": "node scripts/prepack.js",
@@ -70,7 +69,7 @@
 		"rollup-plugin-esbuild": "5.0.0",
 		"rollup-plugin-string": "3.0.0",
 		"vsce": "2.15.0",
-		"xo": "0.53.1"
+		"xo": "0.54.2"
 	},
 	"packageManager": "pnpm@6.35.1",
 	"engines": {
