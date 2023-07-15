@@ -65,7 +65,7 @@
 		"@types/vscode": "1.75.1",
 		"esbuild": "0.18.7",
 		"execa": "7.1.1",
-		"rollup": "3.25.1",
+		"rollup": "3.25.2",
 		"rollup-plugin-esbuild": "5.0.0",
 		"rollup-plugin-string": "3.0.0",
 		"vsce": "2.15.0",
