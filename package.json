@@ -69,7 +69,7 @@
 		"rollup-plugin-esbuild": "5.0.0",
 		"rollup-plugin-string": "3.0.0",
 		"vsce": "2.15.0",
-		"xo": "0.55.0"
+		"xo": "0.55.1"
 	},
 	"packageManager": "pnpm@8.6.12",
 	"engines": {
