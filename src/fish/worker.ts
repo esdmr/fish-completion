@@ -118,6 +118,15 @@ function getCommand(fishPath: string): [string, ...string[]] {
 	}
 }
 
+export function checkPlatformSupport() {
+	try {
+		getCommand('fish');
+		return undefined;
+	} catch (error) {
+		return (error as Error).message;
+	}
+}
+
 export function debugStdOutputAndError(
 	child: ExecaChildProcess,
 	output: vscode.OutputChannel,
