@@ -41,8 +41,8 @@ devDependencies:
     specifier: 2.15.0
     version: 2.15.0
   xo:
-    specifier: 0.55.1
-    version: 0.55.1
+    specifier: 0.56.0
+    version: 0.56.0
 
 packages:
 
@@ -4456,8 +4456,8 @@ packages:
     engines: {node: '>=4.0'}
     dev: true
 
-  /xo@0.55.1:
-    resolution: {integrity: sha512-xjwxX6YM2JmAqmoGaXiBSyzE4DVCzSCgIux4Y001BeMc2V42xyoZtdrqICGYwo8or4cS/QBKJqKiy5QbJ+YqHw==}
+  /xo@0.56.0:
+    resolution: {integrity: sha512-ohzSqgQ8POgZ3KNaEK/gxDovb6h3cglxv8+xi9Dn7gmRe8g4qotpOZpMs5ACJhvkJDmJOhiKbk6Uq6Mx1Di9DA==}
     engines: {node: '>=16'}
     hasBin: true
     peerDependencies:
