@@ -13,7 +13,7 @@ This script handles the fish shell side of the completions.
 The tenth channel (index 9) of the process is the output channel. The script
 does **not** send anything to stdout/stderr.
 
-The `_dir` variable should refer to a temporary directory.
+The `_FISH_COMPLETION_TEMP_DIR` variable should refer to a temporary directory.
 
 It sends the string `ready` to the output channel when fish shell finishes
 processing the config files and prints the first prompt.
@@ -22,8 +22,8 @@ It registers the `e` key bind to query the completions.
 Unfortunately, `fish_prompt` cannot set the `commandline`, so once it sends the
 string `ready`, the extension should send the character `e` to the stdin.
 
-It reads the `commandline` from `$_dir/text`. The extension should write the
-text content up to the cursor to this directory.
+It reads the `commandline` from `$_FISH_COMPLETION_TEMP_DIR/text`. The extension
+should write the text content up to the cursor to this directory.
 
 The script will send the current token to the output channel according to the
 following format. The extension uses this to determine what to erase before
@@ -50,7 +50,7 @@ The type of entry may be: `Text`, `Keyword`, `Variable`, `File`, `Folder`, or
 
 Since the script is one-shot, it will end once it sends all the entries.
 
-## [`fish.ts`](src/fish.ts)
+## [`fish/complete-command.ts`](src/fish/complete-command.ts)
 
 Initially, it creates a temporary directory. The extension should remove it
 later.
@@ -58,14 +58,9 @@ later.
 It also prepares a script to run:
 
 ```sh
-script -e -q -c "fish -iPC 'bootstrap'" /dev/null
-```
-
-where `bootstrap` is:
-
-```fish
-set -g _dir "$_FISH_COMPLETION_TEMP_DIR"
-source "$_FISH_COMPLETION_WORKER"
+script -e -q -c 'fish -iPC '\''source $_FISH_COMPLETION_WORKER'\' /dev/null
+# Or on FreeBSD and Darwin:
+script -q /dev/null fish -iPC 'source $_FISH_COMPLETION_WORKER'
 ```
 
 It then spawns the script with `TERM=dumb`, `_FISH_COMPLETION_TEMP_DIR=` path to
@@ -78,7 +73,7 @@ Once `ready` was received on the output channel, it will send `e` to stdin.
 By collecting every line on the output channel starting with `current` or
 `complete`, the extension can provide the completion entries to the editor.
 
-## Updating completions
+## [`fish/update-completions.ts`](src/fish/update-completions.ts)
 
 Since the extension uses fish completions, it may provide a command to run
 `fish_update_completions` for convenience.
