@@ -63,7 +63,7 @@
 		"@rollup/plugin-node-resolve": "15.2.3",
 		"@types/node": "16.18.62",
 		"@types/vscode": "1.75.1",
-		"esbuild": "0.19.5",
+		"esbuild": "0.19.6",
 		"execa": "7.2.0",
 		"rollup": "3.29.4",
 		"rollup-plugin-esbuild": "5.0.0",
