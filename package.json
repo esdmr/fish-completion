@@ -61,7 +61,7 @@
 		"@changesets/cli": "2.26.2",
 		"@rollup/plugin-commonjs": "25.0.7",
 		"@rollup/plugin-node-resolve": "15.2.3",
-		"@types/node": "16.18.63",
+		"@types/node": "16.18.64",
 		"@types/vscode": "1.75.1",
 		"esbuild": "0.19.7",
 		"execa": "7.2.0",
