@@ -17,8 +17,8 @@ devDependencies:
     specifier: 15.2.3
     version: 15.2.3(rollup@3.29.4)
   '@types/node':
-    specifier: 16.18.81
-    version: 16.18.81
+    specifier: 16.18.82
+    version: 16.18.82
   '@types/vscode':
     specifier: 1.75.1
     version: 1.75.1
@@ -661,8 +661,8 @@ packages:
     resolution: {integrity: sha512-J8xLz7q2OFulZ2cyGTLE1TbbZcjpno7FaN6zdJNrgAdrJ+DZzh/uFR6YrTb4C+nXakvud8Q4+rbhoIWlYQbUFQ==}
     dev: true
 
-  /@types/node@16.18.81:
-    resolution: {integrity: sha512-8irEHoBee020dTRYD1lPhK9vhjBbazF1wVii0vdVFfdQ0UQUTYObOL02aZgffWd7EXh2LT7WkcY41OfO006ARQ==}
+  /@types/node@16.18.82:
+    resolution: {integrity: sha512-pcDZtkx9z8XYV+ius2P3Ot2VVrcYOfXffBQUBuiszrlUzKSmoDYqo+mV+IoL8iIiIjjtOMvNSmH1hwJ+Q+f96Q==}
     dev: true
 
   /@types/normalize-package-data@2.4.1:
