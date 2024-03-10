@@ -25,14 +25,14 @@ export async function updateCompletions(options: {
 	});
 
 	const rl = createInterface(outputChannel);
-	output.appendLine('Updating completions');
+	output.info('Updating completions');
 
 	rl.on('line', (line) => {
 		if (!line.trim()) {
 			return;
 		}
 
-		output.appendLine('Line: ' + line);
+		output.trace('Line: ' + line);
 
 		if (line.includes('ready')) {
 			inputChannel.write('u');
@@ -62,12 +62,12 @@ export async function updateCompletions(options: {
 		await child;
 	} catch (error) {
 		if (String(error).includes('Command failed')) {
-			output.appendLine('Failure: ' + String(error));
+			output.error('Failure: ' + String(error));
 			return;
 		}
 
 		throw error;
 	}
 
-	output.appendLine('Done');
+	output.info('Done');
 }
