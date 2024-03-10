@@ -9,11 +9,13 @@ import {execa, type ExecaChildProcess} from 'execa';
 import vscode from 'vscode';
 import {disposables} from '../disposables.js';
 
-export const temporaryDir = mkdtempSync(join(tmpdir(), 'fish-completion-'));
+export const temporaryDirectory = mkdtempSync(
+	join(tmpdir(), 'fish-completion-'),
+);
 
 disposables.add(
 	new vscode.Disposable(() => {
-		rmSync(temporaryDir, {force: true, recursive: true});
+		rmSync(temporaryDirectory, {force: true, recursive: true});
 	}),
 );
 
@@ -61,7 +63,7 @@ export function startWorker(options: {
 			_FISH_COMPLETION_ASSIST: options.isAssistantEnabled
 				? 'v1'
 				: 'disabled',
-			_FISH_COMPLETION_TEMP_DIR: temporaryDir,
+			_FISH_COMPLETION_TEMP_DIR: temporaryDirectory,
 			_FISH_COMPLETION_WORKER: fileURLToPath(
 				new URL('worker.fish', import.meta.url),
 			),
