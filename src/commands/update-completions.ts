@@ -41,11 +41,11 @@ const command: Parameters<typeof vscode.window.withProgress>[1] = async (
 		const string = String(error);
 
 		if (string.includes('AbortError')) {
-			output.appendLine('Aborted');
+			output.warn('Aborted');
 			return;
 		}
 
-		output.appendLine('Error: ' + string);
+		output.error('Error: ' + string);
 
 		void vscode.window.showErrorMessage(
 			'Something gone wrong while updating fish completions.',

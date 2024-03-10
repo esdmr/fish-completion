@@ -31,7 +31,7 @@ export async function completeCommand(options: {
 
 	const rl = createInterface(outputChannel);
 
-	output.appendLine(
+	output.info(
 		'Request: ' + options.text.slice(options.text.lastIndexOf('\n') + 1),
 	);
 
@@ -40,7 +40,7 @@ export async function completeCommand(options: {
 			return;
 		}
 
-		output.appendLine('Line: ' + line);
+		output.trace('Line: ' + line);
 
 		if (line.includes('ready')) {
 			inputChannel.write('e');
@@ -58,7 +58,7 @@ export async function completeCommand(options: {
 		await child;
 	} catch (error) {
 		if (String(error).includes('Command failed')) {
-			output.appendLine('Failure: ' + String(error));
+			output.error('Failure: ' + String(error));
 
 			return {completions: [], currentToken};
 		}
@@ -69,6 +69,6 @@ export async function completeCommand(options: {
 		await writeFile(join(temporaryDir, 'cmd'), '', 'utf8');
 	}
 
-	output.appendLine('Done');
+	output.info('Done');
 	return {completions, currentToken};
 }

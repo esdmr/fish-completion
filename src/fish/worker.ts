@@ -129,13 +129,13 @@ export function checkPlatformSupport() {
 
 export function debugStdOutputAndError(
 	child: ExecaChildProcess,
-	output: vscode.OutputChannel,
+	output: vscode.LogOutputChannel,
 ) {
 	for (const channel of ['stdout', 'stderr'] as const) {
 		const rl = createInterface(child[channel]!);
 
 		rl.on('line', (line) => {
-			output.appendLine(channel + ': ' + line);
+			output.trace(channel + ': ' + line);
 		});
 
 		rl.resume();

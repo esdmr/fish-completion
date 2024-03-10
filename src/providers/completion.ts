@@ -51,11 +51,11 @@ const completionProvider: vscode.CompletionItemProvider = {
 			const string = String(error);
 
 			if (string.includes('AbortError')) {
-				output.appendLine('Aborted');
+				output.warn('Aborted');
 				return;
 			}
 
-			output.appendLine('Error: ' + string);
+			output.error('Error: ' + string);
 
 			if (!errorMessageSent) {
 				void vscode.window.showErrorMessage(

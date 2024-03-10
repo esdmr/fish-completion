@@ -16,14 +16,14 @@ export function activate(_context: vscode.ExtensionContext) {
 		return;
 	}
 
-	output.appendLine('Activated');
+	output.info('Activated');
 
 	registerCompletionProvider();
 	registerUpdateCompletionsCommand();
 }
 
 export function deactivate() {
-	output.appendLine('Deactivated');
+	output.info('Deactivated');
 
 	for (const item of disposables) {
 		item.dispose();
