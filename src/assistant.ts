@@ -1,17 +1,17 @@
-import vscode from 'vscode';
+import {Disposable, EndOfLine, type TextDocument} from 'vscode';
 import {
 	functionExcludeList,
 	variableExcludeList,
 } from './assistant-exclude-list.js';
 import {disposables} from './disposables.js';
 
-function getEndOfLine(eol: vscode.EndOfLine) {
+function getEndOfLine(eol: EndOfLine) {
 	switch (eol) {
-		case vscode.EndOfLine.LF: {
+		case EndOfLine.LF: {
 			return '\n';
 		}
 
-		case vscode.EndOfLine.CRLF: {
+		case EndOfLine.CRLF: {
 			return '\r\n';
 		}
 	}
@@ -36,7 +36,7 @@ class AssistantResult {
 		].join('\n');
 	}
 
-	update(document: vscode.TextDocument) {
+	update(document: TextDocument) {
 		this.version = document.version;
 		this.functions.clear();
 		this.variables.clear();
@@ -63,10 +63,10 @@ class AssistantResult {
 	}
 }
 
-const cache = new Map<vscode.TextDocument, AssistantResult>();
+const cache = new Map<TextDocument, AssistantResult>();
 
 disposables.add(
-	new vscode.Disposable(() => {
+	new Disposable(() => {
 		cache.clear();
 	}),
 );
@@ -85,9 +85,7 @@ function fixCache() {
 	}
 }
 
-export function getAssistantResult(
-	document: vscode.TextDocument,
-): AssistantResult {
+export function getAssistantResult(document: TextDocument): AssistantResult {
 	fixCache();
 
 	const cached = cache.get(document);

@@ -6,7 +6,7 @@ import {createInterface} from 'node:readline';
 import type {Readable} from 'node:stream';
 import {fileURLToPath} from 'node:url';
 import {execa} from 'execa';
-import vscode from 'vscode';
+import {Disposable, type LogOutputChannel} from 'vscode';
 import {disposables} from '../disposables.js';
 import {Message} from '../message.js';
 
@@ -15,7 +15,7 @@ export const temporaryDirectory = mkdtempSync(
 );
 
 disposables.add(
-	new vscode.Disposable(() => {
+	new Disposable(() => {
 		rmSync(temporaryDirectory, {force: true, recursive: true});
 	}),
 );
@@ -34,7 +34,7 @@ export async function* startWorker(options: {
 	isAssistantEnabled?: boolean | undefined;
 	signal?: AbortSignal | undefined;
 	timeout?: number | undefined;
-	output?: vscode.LogOutputChannel | undefined;
+	output?: LogOutputChannel | undefined;
 }): AsyncGenerator<string, void, string | undefined> {
 	if (!safePath.test(options.fishPath)) {
 		options.fishPath = 'fish';

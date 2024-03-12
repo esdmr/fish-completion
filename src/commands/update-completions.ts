@@ -1,4 +1,4 @@
-import vscode from 'vscode';
+import {ProgressLocation, commands, window} from 'vscode';
 import {vscodeAbortController} from '../abort.js';
 import {getFishPath} from '../config.js';
 import {disposables} from '../disposables.js';
@@ -11,7 +11,7 @@ const failureMessage = new Message(
 	'Something gone wrong while updating fish completions',
 );
 
-const command: Parameters<typeof vscode.window.withProgress>[1] = async (
+const command: Parameters<typeof window.withProgress>[1] = async (
 	progress,
 	token,
 ) => {
@@ -60,12 +60,12 @@ const command: Parameters<typeof vscode.window.withProgress>[1] = async (
 
 export function registerUpdateCompletionsCommand() {
 	disposables.add(
-		vscode.commands.registerCommand(
+		commands.registerCommand(
 			'fish-completion.fish_update_completions',
 			() =>
-				vscode.window.withProgress(
+				window.withProgress(
 					{
-						location: vscode.ProgressLocation.Notification,
+						location: ProgressLocation.Notification,
 						cancellable: true,
 						title: 'Updating fish completions',
 					},

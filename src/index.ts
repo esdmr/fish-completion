@@ -1,4 +1,4 @@
-import type vscode from 'vscode';
+import type {ExtensionContext} from 'vscode';
 import {registerUpdateCompletionsCommand} from './commands/update-completions.js';
 import {disposables} from './disposables.js';
 import {output} from './output.js';
@@ -11,7 +11,7 @@ const cannotBeActivatedMessage = new Message(
 	'Fish completions cannot be activated',
 );
 
-export function activate(_context: vscode.ExtensionContext) {
+export function activate(_context: ExtensionContext) {
 	const reason = checkPlatformSupport();
 
 	if (reason) {

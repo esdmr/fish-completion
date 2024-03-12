@@ -1,5 +1,12 @@
 import {dirname} from 'node:path';
-import vscode from 'vscode';
+import {
+	Position,
+	type CompletionItemProvider,
+	Range,
+	CompletionItem,
+	CompletionItemKind,
+	languages,
+} from 'vscode';
 import {vscodeAbortController} from '../abort.js';
 import {getAssistantResult} from '../assistant.js';
 import {getFishPath, isAssistantEnabled} from '../config.js';
@@ -11,13 +18,13 @@ import {
 import {output} from '../output.js';
 import {Message} from '../message.js';
 
-const startOfDocument = new vscode.Position(0, 0);
+const startOfDocument = new Position(0, 0);
 const failureMessage = new Message(
 	'error',
 	'Something gone wrong while fetching completions',
 );
 
-const completionProvider: vscode.CompletionItemProvider = {
+const completionProvider: CompletionItemProvider = {
 	async provideCompletionItems(document, position, token) {
 		if (token.isCancellationRequested) {
 			return;
@@ -30,9 +37,7 @@ const completionProvider: vscode.CompletionItemProvider = {
 				? getAssistantResult(document).getCommands()
 				: '';
 
-			const text = document.getText(
-				new vscode.Range(startOfDocument, position),
-			);
+			const text = document.getText(new Range(startOfDocument, position));
 
 			const {completions, currentToken} = await completeCommand({
 				cwd: dirname(document.uri.fsPath),
@@ -43,7 +48,7 @@ const completionProvider: vscode.CompletionItemProvider = {
 				signal,
 			});
 
-			const range = new vscode.Range(
+			const range = new Range(
 				position.translate(0, -currentToken.length),
 				position,
 			);
@@ -69,9 +74,9 @@ const completionProvider: vscode.CompletionItemProvider = {
 
 function getCompletionItem(
 	{kind, label, description}: ParsedCompletionItem,
-	range: vscode.Range,
+	range: Range,
 ) {
-	const completion = new vscode.CompletionItem(
+	const completion = new CompletionItem(
 		{label, description},
 		getCompletionKind(kind),
 	);
@@ -81,41 +86,36 @@ function getCompletionItem(
 	return completion;
 }
 
-function getCompletionKind(
-	type: string | undefined,
-): vscode.CompletionItemKind {
+function getCompletionKind(type: string | undefined): CompletionItemKind {
 	switch (type) {
 		case 'File': {
-			return vscode.CompletionItemKind.File;
+			return CompletionItemKind.File;
 		}
 
 		case 'Folder': {
-			return vscode.CompletionItemKind.Folder;
+			return CompletionItemKind.Folder;
 		}
 
 		case 'Keyword': {
-			return vscode.CompletionItemKind.Keyword;
+			return CompletionItemKind.Keyword;
 		}
 
 		case 'Function': {
-			return vscode.CompletionItemKind.Function;
+			return CompletionItemKind.Function;
 		}
 
 		case 'Variable': {
-			return vscode.CompletionItemKind.Variable;
+			return CompletionItemKind.Variable;
 		}
 
 		default: {
-			return vscode.CompletionItemKind.Text;
+			return CompletionItemKind.Text;
 		}
 	}
 }
 
 export function registerCompletionProvider() {
 	disposables.add(
-		vscode.languages.registerCompletionItemProvider(
-			'fish',
-			completionProvider,
-		),
+		languages.registerCompletionItemProvider('fish', completionProvider),
 	);
 }
