@@ -4,6 +4,12 @@ import {getFishPath} from '../config.js';
 import {disposables} from '../disposables.js';
 import {updateCompletions} from '../fish/update-completions.js';
 import {output} from '../output.js';
+import {Message} from '../message.js';
+
+const failureMessage = new Message(
+	'error',
+	'Something gone wrong while updating fish completions',
+);
 
 const command: Parameters<typeof vscode.window.withProgress>[1] = async (
 	progress,
@@ -46,10 +52,7 @@ const command: Parameters<typeof vscode.window.withProgress>[1] = async (
 		}
 
 		output.error('Error: ' + string);
-
-		void vscode.window.showErrorMessage(
-			'Something gone wrong while updating fish completions.',
-		);
+		void failureMessage.show(string);
 	} finally {
 		dispose();
 	}

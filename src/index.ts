@@ -1,17 +1,21 @@
-import vscode from 'vscode';
+import type vscode from 'vscode';
 import {registerUpdateCompletionsCommand} from './commands/update-completions.js';
 import {disposables} from './disposables.js';
 import {output} from './output.js';
 import {registerCompletionProvider} from './providers/completion.js';
 import {checkPlatformSupport} from './fish/worker.js';
+import {Message} from './message.js';
+
+const cannotBeActivatedMessage = new Message(
+	'error',
+	'Fish completions cannot be activated',
+);
 
 export function activate(_context: vscode.ExtensionContext) {
 	const reason = checkPlatformSupport();
 
 	if (reason) {
-		void vscode.window.showErrorMessage(
-			'Fish completions cannot be activated: ' + reason,
-		);
+		void cannotBeActivatedMessage.show(reason);
 		deactivate();
 		return;
 	}

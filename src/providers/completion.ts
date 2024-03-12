@@ -6,9 +6,13 @@ import {getFishPath, isAssistantEnabled} from '../config.js';
 import {disposables} from '../disposables.js';
 import {completeCommand} from '../fish/complete-command.js';
 import {output} from '../output.js';
+import {Message} from '../message.js';
 
 const startOfDocument = new vscode.Position(0, 0);
-let errorMessageSent = false;
+const failureMessage = new Message(
+	'error',
+	'Something gone wrong while fetching completions',
+);
 
 const completionProvider: vscode.CompletionItemProvider = {
 	async provideCompletionItems(document, position, token) {
@@ -44,9 +48,7 @@ const completionProvider: vscode.CompletionItemProvider = {
 					description: parts.join('\t'),
 					kind,
 					position,
-					currentToken,
-				});
-			});
+			failureMessage.forget();
 		} catch (error) {
 			const string = String(error);
 
@@ -56,15 +58,7 @@ const completionProvider: vscode.CompletionItemProvider = {
 			}
 
 			output.error('Error: ' + string);
-
-			if (!errorMessageSent) {
-				void vscode.window.showErrorMessage(
-					'Something gone wrong while fetching completions.',
-				);
-
-				errorMessageSent = true;
-			}
-
+			void failureMessage.showOnce();
 			throw error;
 		} finally {
 			dispose();
