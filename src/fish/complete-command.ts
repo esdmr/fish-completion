@@ -2,7 +2,11 @@ import {writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import {createInterface} from 'node:readline';
 import {output} from '../output.js';
-import {debugStdOutputAndError, startWorker, temporaryDir} from './worker.js';
+import {
+	debugStdOutputAndError,
+	startWorker,
+	temporaryDirectory,
+} from './worker.js';
 
 export async function completeCommand(options: {
 	cwd: string;
@@ -11,10 +15,10 @@ export async function completeCommand(options: {
 	text: string;
 	signal: AbortSignal;
 }) {
-	await writeFile(join(temporaryDir, 'text'), options.text, 'utf8');
+	await writeFile(join(temporaryDirectory, 'text'), options.text, 'utf8');
 
 	await writeFile(
-		join(temporaryDir, 'cmd'),
+		join(temporaryDirectory, 'cmd'),
 		options.assistantCommands,
 		'utf8',
 	);
@@ -65,8 +69,8 @@ export async function completeCommand(options: {
 
 		throw error;
 	} finally {
-		await writeFile(join(temporaryDir, 'text'), '', 'utf8');
-		await writeFile(join(temporaryDir, 'cmd'), '', 'utf8');
+		await writeFile(join(temporaryDirectory, 'text'), '', 'utf8');
+		await writeFile(join(temporaryDirectory, 'cmd'), '', 'utf8');
 	}
 
 	output.info('Done');

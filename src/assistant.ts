@@ -14,10 +14,6 @@ function getEndOfLine(eol: vscode.EndOfLine) {
 		case vscode.EndOfLine.CRLF: {
 			return '\r\n';
 		}
-
-		default: {
-			throw new Error(`Unknown EndOfLine: ${String(eol)}`);
-		}
 	}
 }
 
