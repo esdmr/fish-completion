@@ -4,7 +4,7 @@
 		"module": "ESNext",
 		"target": "ESNext",
 		"moduleResolution": "node",
-		"importsNotUsedAsValues": "error",
+		"verbatimModuleSyntax": true,
 		"allowSyntheticDefaultImports": true,
 		"checkJs": true,
 		"alwaysStrict": true,
