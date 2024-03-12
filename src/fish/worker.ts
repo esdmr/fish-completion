@@ -5,9 +5,10 @@ import {platform} from 'node:process';
 import {createInterface} from 'node:readline';
 import type {Readable} from 'node:stream';
 import {fileURLToPath} from 'node:url';
-import {execa, type ExecaChildProcess} from 'execa';
+import {execa} from 'execa';
 import vscode from 'vscode';
 import {disposables} from '../disposables.js';
+import {Message} from '../message.js';
 
 export const temporaryDirectory = mkdtempSync(
 	join(tmpdir(), 'fish-completion-'),
@@ -21,13 +22,20 @@ disposables.add(
 
 const safePath = /^(?:\/[\w.-]+)+$|^[\w.-]+$/;
 
-export function startWorker(options: {
+const failureMessage = new Message(
+	'error',
+	'Something gone wrong while running a fish script',
+);
+
+export async function* startWorker(options: {
 	cwd: string;
-	isAssistantEnabled?: boolean;
 	fishPath: string;
+	keyBind: string;
+	isAssistantEnabled?: boolean | undefined;
 	signal?: AbortSignal | undefined;
-	timeout?: number;
-}) {
+	timeout?: number | undefined;
+	output?: vscode.LogOutputChannel | undefined;
+}): AsyncGenerator<string, void, string | undefined> {
 	if (!safePath.test(options.fishPath)) {
 		options.fishPath = 'fish';
 	}
@@ -73,11 +81,59 @@ export function startWorker(options: {
 		signal: options.signal!,
 	});
 
-	return {
-		child,
-		inputChannel: child.stdin!,
-		outputChannel: (child.stdio as Readable[])[9]!,
-	};
+	if (options.output) {
+		const {output} = options;
+
+		output.trace('Execute: ' + JSON.stringify(command));
+
+		for (const channel of ['stdout', 'stderr'] as const) {
+			const rl = createInterface(child[channel]!);
+
+			rl.on('line', (line) => {
+				output.trace(channel + ': ' + line);
+			});
+
+			rl.resume();
+		}
+	}
+
+	const rl = createInterface({
+		input: (child.stdio as Readable[])[9]!,
+		prompt: '',
+		signal: options.signal,
+	});
+
+	try {
+		let ready = false;
+
+		for await (const line of rl) {
+			if (!line.trim()) continue;
+			options.output?.trace('Line: ' + line);
+
+			if (ready) {
+				yield line;
+			} else if (line.includes('ready')) {
+				options.output?.trace('stdin: ' + options.keyBind);
+				child.stdin!.write(options.keyBind);
+				ready = true;
+			}
+		}
+
+		await child;
+		options.output?.info('Done');
+		failureMessage.forget();
+	} catch (error) {
+		const string = String(error);
+		options.output?.error('Error: ' + string);
+
+		if (string.includes('Command failed')) {
+			void failureMessage.showOnce();
+		}
+
+		throw error;
+	} finally {
+		child.kill();
+	}
 }
 
 function getCommand(fishPath: string): [string, ...string[]] {
@@ -126,20 +182,5 @@ export function checkPlatformSupport() {
 		return undefined;
 	} catch (error) {
 		return (error as Error).message;
-	}
-}
-
-export function debugStdOutputAndError(
-	child: ExecaChildProcess,
-	output: vscode.LogOutputChannel,
-) {
-	for (const channel of ['stdout', 'stderr'] as const) {
-		const rl = createInterface(child[channel]!);
-
-		rl.on('line', (line) => {
-			output.trace(channel + ': ' + line);
-		});
-
-		rl.resume();
 	}
 }

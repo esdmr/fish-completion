@@ -28,21 +28,21 @@ const command: Parameters<typeof vscode.window.withProgress>[1] = async (
 	let currentProgress = 0;
 
 	try {
-		await updateCompletions({
+		for await (const state of updateCompletions({
 			fishPath: getFishPath(),
+			output,
 			signal,
-			callback(state) {
-				const percentage = (state.progress / state.total) * 100;
-				const increment = Math.max(percentage - currentProgress, 0);
+		})) {
+			const percentage = (state.progress / state.total) * 100;
+			const increment = Math.max(percentage - currentProgress, 0);
 
-				progress.report({
-					increment,
-					message: `${state.progress}/${state.total} - ${state.current}`,
-				});
+			progress.report({
+				increment,
+				message: `${state.progress}/${state.total} - ${state.current}`,
+			});
 
-				currentProgress += increment;
-			},
-		});
+			currentProgress += increment;
+		}
 	} catch (error) {
 		const string = String(error);
 

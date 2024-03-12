@@ -1,78 +1,65 @@
 import {writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
-import {createInterface} from 'node:readline';
-import {output} from '../output.js';
-import {
-	debugStdOutputAndError,
-	startWorker,
-	temporaryDirectory,
-} from './worker.js';
+import type {LogOutputChannel} from 'vscode';
+import {startWorker, temporaryDirectory} from './worker.js';
+
+const textFile = join(temporaryDirectory, 'text');
+const commandFile = join(temporaryDirectory, 'cmd');
+
+export type ParsedCompletionItem = {
+	kind: string;
+	label: string;
+	description: string;
+};
 
 export async function completeCommand(options: {
 	cwd: string;
 	fishPath: string;
 	assistantCommands: string;
 	text: string;
-	signal: AbortSignal;
+	output?: LogOutputChannel | undefined;
+	signal?: AbortSignal | undefined;
 }) {
-	await writeFile(join(temporaryDirectory, 'text'), options.text, 'utf8');
+	options.output?.info('Requesting for completions');
 
-	await writeFile(
-		join(temporaryDirectory, 'cmd'),
-		options.assistantCommands,
-		'utf8',
-	);
-
-	let currentToken = '';
-	const completions: string[] = [];
-
-	const {child, inputChannel, outputChannel} = startWorker({
-		cwd: options.cwd,
-		isAssistantEnabled: options.assistantCommands !== '',
-		fishPath: options.fishPath,
-		signal: options.signal,
-	});
-
-	const rl = createInterface(outputChannel);
-
-	output.info(
-		'Request: ' + options.text.slice(options.text.lastIndexOf('\n') + 1),
-	);
-
-	rl.on('line', (line) => {
-		if (!line.trim()) {
-			return;
-		}
-
-		output.trace('Line: ' + line);
-
-		if (line.includes('ready')) {
-			inputChannel.write('e');
-		} else if (line.startsWith('complete ')) {
-			completions.push(line.slice('complete '.length));
-		} else if (line.startsWith('current ')) {
-			currentToken = line.slice('current '.length);
-		}
-	});
-
-	rl.resume();
-	debugStdOutputAndError(child, output);
+	await Promise.all([
+		writeFile(textFile, options.text),
+		writeFile(commandFile, options.assistantCommands),
+	]);
 
 	try {
-		await child;
-	} catch (error) {
-		if (String(error).includes('Command failed')) {
-			output.error('Failure: ' + String(error));
+		let currentToken = '';
 
-			return {completions: [], currentToken};
+		const completions: ParsedCompletionItem[] = [];
+
+		for await (const line of startWorker({
+			cwd: options.cwd,
+			fishPath: options.fishPath,
+			keyBind: 'e',
+			isAssistantEnabled: options.assistantCommands !== '',
+			signal: options.signal,
+			output: options.output,
+		})) {
+			if (line.startsWith('complete ')) {
+				const [kind = '', label = '', ...parts] = line
+					.slice('complete '.length)
+					.split('\t');
+
+				completions.push({
+					kind,
+					label,
+					description: parts.join('\t'),
+				});
+			} else if (line.startsWith('current ')) {
+				currentToken = line.slice('current '.length);
+			}
 		}
 
-		throw error;
+		return {completions, currentToken};
 	} finally {
-		await writeFile(join(temporaryDirectory, 'text'), '', 'utf8');
-		await writeFile(join(temporaryDirectory, 'cmd'), '', 'utf8');
+		await Promise.all([
+			writeFile(textFile, ''),
+			writeFile(commandFile, ''),
+		]);
 	}
-
-	output.info('Done');
-	return {completions, currentToken};
 }

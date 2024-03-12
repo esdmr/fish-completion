@@ -4,7 +4,10 @@ import {vscodeAbortController} from '../abort.js';
 import {getAssistantResult} from '../assistant.js';
 import {getFishPath, isAssistantEnabled} from '../config.js';
 import {disposables} from '../disposables.js';
-import {completeCommand} from '../fish/complete-command.js';
+import {
+	completeCommand,
+	type ParsedCompletionItem,
+} from '../fish/complete-command.js';
 import {output} from '../output.js';
 import {Message} from '../message.js';
 
@@ -36,19 +39,17 @@ const completionProvider: vscode.CompletionItemProvider = {
 				fishPath: getFishPath(document),
 				assistantCommands,
 				text,
+				output,
 				signal,
 			});
 
-			return completions.map((item) => {
-				const [type, label = '', ...parts] = item.split('\t');
-				const kind = getCompletionKind(type);
+			const range = new vscode.Range(
+				position.translate(0, -currentToken.length),
+				position,
+			);
 
-				return getCompletionItem({
-					label,
-					description: parts.join('\t'),
-					kind,
-					position,
 			failureMessage.forget();
+			return completions.map((i) => getCompletionItem(i, range));
 		} catch (error) {
 			const string = String(error);
 
@@ -66,30 +67,23 @@ const completionProvider: vscode.CompletionItemProvider = {
 	},
 };
 
-function getCompletionItem(options: {
-	label: string;
-	description: string;
-	kind: vscode.CompletionItemKind;
-	position: vscode.Position;
-	currentToken: string;
-}) {
+function getCompletionItem(
+	{kind, label, description}: ParsedCompletionItem,
+	range: vscode.Range,
+) {
 	const completion = new vscode.CompletionItem(
-		{
-			label: options.label,
-			description: options.description,
-		},
-		options.kind,
+		{label, description},
+		getCompletionKind(kind),
 	);
 
-	completion.range = new vscode.Range(
-		options.position.translate(0, -options.currentToken.length),
-		options.position,
-	);
+	completion.range = range;
 
 	return completion;
 }
 
-function getCompletionKind(type: string | undefined) {
+function getCompletionKind(
+	type: string | undefined,
+): vscode.CompletionItemKind {
 	switch (type) {
 		case 'File': {
 			return vscode.CompletionItemKind.File;
