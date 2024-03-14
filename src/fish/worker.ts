@@ -8,7 +8,6 @@ import {fileURLToPath} from 'node:url';
 import {execa} from 'execa';
 import {Disposable, type LogOutputChannel} from 'vscode';
 import {disposables} from '../utils/disposables.js';
-import {Message} from '../utils/message.js';
 
 export const temporaryDirectory = mkdtempSync(
 	join(tmpdir(), 'fish-completion-'),
@@ -21,11 +20,6 @@ disposables.add(
 );
 
 const safePath = /^(?:\/[\w.-]+)+$|^[\w.-]+$/;
-
-const failureMessage = new Message(
-	'error',
-	'Something gone wrong while running a fish script',
-);
 
 export async function* startWorker(options: {
 	cwd: string;
@@ -121,16 +115,6 @@ export async function* startWorker(options: {
 
 		await child;
 		options.output?.info('Done');
-		failureMessage.forget();
-	} catch (error) {
-		const string = String(error);
-		options.output?.error('Error: ' + string);
-
-		if (string.includes('Command failed')) {
-			void failureMessage.showOnce();
-		}
-
-		throw error;
 	} finally {
 		child.kill();
 	}
