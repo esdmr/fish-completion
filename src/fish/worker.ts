@@ -7,8 +7,8 @@ import type {Readable} from 'node:stream';
 import {fileURLToPath} from 'node:url';
 import {execa} from 'execa';
 import {Disposable, type LogOutputChannel} from 'vscode';
-import {disposables} from '../disposables.js';
-import {Message} from '../message.js';
+import {disposables} from '../utils/disposables.js';
+import {Message} from '../utils/message.js';
 
 export const temporaryDirectory = mkdtempSync(
 	join(tmpdir(), 'fish-completion-'),

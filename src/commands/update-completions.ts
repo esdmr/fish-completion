@@ -1,10 +1,10 @@
 import {ProgressLocation, commands, window} from 'vscode';
-import {vscodeAbortController} from '../abort.js';
-import {getFishPath} from '../config.js';
-import {disposables} from '../disposables.js';
+import {vscodeAbortController} from '../utils/abort.js';
+import {getFishPath} from '../utils/config.js';
+import {disposables} from '../utils/disposables.js';
 import {updateCompletions} from '../fish/update-completions.js';
-import {output} from '../output.js';
-import {Message} from '../message.js';
+import {output} from '../utils/output.js';
+import {Message} from '../utils/message.js';
 
 const failureMessage = new Message(
 	'error',

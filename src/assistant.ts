@@ -3,7 +3,7 @@ import {
 	functionExcludeList,
 	variableExcludeList,
 } from './assistant-exclude-list.js';
-import {disposables} from './disposables.js';
+import {disposables} from './utils/disposables.js';
 
 function getEndOfLine(eol: EndOfLine) {
 	switch (eol) {

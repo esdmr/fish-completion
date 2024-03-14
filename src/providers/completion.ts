@@ -7,16 +7,16 @@ import {
 	CompletionItemKind,
 	languages,
 } from 'vscode';
-import {vscodeAbortController} from '../abort.js';
+import {vscodeAbortController} from '../utils/abort.js';
 import {getAssistantResult} from '../assistant.js';
-import {getFishPath, isAssistantEnabled} from '../config.js';
-import {disposables} from '../disposables.js';
+import {getFishPath, isAssistantEnabled} from '../utils/config.js';
+import {disposables} from '../utils/disposables.js';
 import {
 	completeCommand,
 	type ParsedCompletionItem,
 } from '../fish/complete-command.js';
-import {output} from '../output.js';
-import {Message} from '../message.js';
+import {output} from '../utils/output.js';
+import {Message} from '../utils/message.js';
 
 const startOfDocument = new Position(0, 0);
 const failureMessage = new Message(

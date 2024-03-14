@@ -1,10 +1,10 @@
 import type {ExtensionContext} from 'vscode';
 import {registerUpdateCompletionsCommand} from './commands/update-completions.js';
-import {disposables} from './disposables.js';
-import {output} from './output.js';
+import {disposables} from './utils/disposables.js';
+import {output} from './utils/output.js';
 import {registerCompletionProvider} from './providers/completion.js';
 import {checkPlatformSupport} from './fish/worker.js';
-import {Message} from './message.js';
+import {Message} from './utils/message.js';
 
 const cannotBeActivatedMessage = new Message(
 	'error',
