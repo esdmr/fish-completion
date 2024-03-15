@@ -23,7 +23,7 @@ export async function* updateCompletions(options: {
 		output: options.output,
 	})) {
 		const match =
-			/^\s*(?<progress>\d+)\s*\/\s*(?<total>\d+)\s*:\s*(?<current>.+?)\s*$/.exec(
+			/^\s*(?<progress>\d+)\s*\/\s*(?<total>\d+)\s*:(?<current>.*)$/.exec(
 				line,
 			);
 
@@ -33,7 +33,7 @@ export async function* updateCompletions(options: {
 
 		state.progress = Number(match.groups?.progress);
 		state.total = Number(match.groups?.total);
-		state.current = String(match.groups?.current);
+		state.current = String(match.groups?.current).trim();
 
 		yield state;
 	}
