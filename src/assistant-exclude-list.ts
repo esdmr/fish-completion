@@ -65,6 +65,7 @@ export const variableExcludeList = new Set([
 	'_FISH_COMPLETION_ASSIST',
 	'_FISH_COMPLETION_TEMP_DIR',
 	'_FISH_COMPLETION_WORKER',
+	'_FISH_COMPLETION_FISH',
 	'__worker_old_status',
 	'__worker_completions',
 	'__worker_line',

@@ -19,8 +19,6 @@ disposables.add(
 	}),
 );
 
-const safePath = /^(?:\/[\w.-]+)+$|^[\w.-]+$/;
-
 export async function* startWorker(options: {
 	cwd: string;
 	fishPath: string;
@@ -30,10 +28,7 @@ export async function* startWorker(options: {
 	timeout?: number | undefined;
 	output?: LogOutputChannel | undefined;
 }): AsyncGenerator<string, void, string | undefined> {
-	if (!safePath.test(options.fishPath)) {
-		options.fishPath = 'fish';
-	}
-
+	options.fishPath ||= 'fish';
 	const command = getCommand(options.fishPath);
 	const child = execa(command[0], command.slice(1), {
 		stdio: [
@@ -69,6 +64,7 @@ export async function* startWorker(options: {
 			_FISH_COMPLETION_WORKER: fileURLToPath(
 				new URL('worker.fish', import.meta.url),
 			),
+			_FISH_COMPLETION_FISH: options.fishPath,
 			/* eslint-enable @typescript-eslint/naming-convention */
 		},
 		timeout: options.timeout ?? 10_000,
@@ -130,7 +126,7 @@ function getCommand(fishPath: string): [string, ...string[]] {
 				'-e',
 				'-q',
 				'-c',
-				`${fishPath} -iPC 'source $_FISH_COMPLETION_WORKER'`,
+				`"$_FISH_COMPLETION_FISH" -iPC 'source $_FISH_COMPLETION_WORKER'`,
 				'/dev/null',
 			];
 		}

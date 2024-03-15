@@ -42,8 +42,8 @@
 				"fish-completion.path.fish": {
 					"type": "string",
 					"markdownDescription": "Path to the `fish` command.",
-					"pattern": "^(?:/[\\w.-]+)*$|^[\\w.-]+$",
-					"default": "",
+					"default": "fish",
+					"scope": "machine",
 					"ignoreSync": true
 				},
 				"fish-completion.assistant.v1.enabled": {
