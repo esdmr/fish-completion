@@ -1,7 +1,8 @@
 import {writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import type {LogOutputChannel} from 'vscode';
-import {startWorker, temporaryDirectory} from './worker.js';
+import {temporaryDirectory} from '../utils/fs.js';
+import {startWorker} from './worker.js';
 
 const textFile = join(temporaryDirectory, 'text');
 const commandFile = join(temporaryDirectory, 'cmd');

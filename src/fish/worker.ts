@@ -1,23 +1,10 @@
-import {mkdtempSync, rmSync} from 'node:fs';
-import {tmpdir} from 'node:os';
-import {join} from 'node:path';
 import {platform} from 'node:process';
 import {createInterface} from 'node:readline';
 import type {Readable} from 'node:stream';
 import {fileURLToPath} from 'node:url';
 import {execa} from 'execa';
-import {Disposable, type LogOutputChannel} from 'vscode';
-import {disposables} from '../utils/disposables.js';
-
-export const temporaryDirectory = mkdtempSync(
-	join(tmpdir(), 'fish-completion-'),
-);
-
-disposables.add(
-	new Disposable(() => {
-		rmSync(temporaryDirectory, {force: true, recursive: true});
-	}),
-);
+import {type LogOutputChannel} from 'vscode';
+import {temporaryDirectory} from '../utils/fs.js';
 
 export async function* startWorker(options: {
 	cwd: string;
