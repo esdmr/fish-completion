@@ -8,7 +8,7 @@ end
 
 function __worker_trace
     set __worker_old_status $status
-    status stack-trace >&9
+    status stack-trace >&2
     return $__worker_old_status
 end
 
@@ -16,8 +16,7 @@ function __worker_complete
     set -q _FISH_COMPLETION_TEMP_DIR || exit (__worker_trace)
 
     # Experimental assistant v1
-    test "$_FISH_COMPLETION_ASSIST" = v1
-    and begin
+    if test "$_FISH_COMPLETION_ASSIST" = v1
         source $_FISH_COMPLETION_TEMP_DIR/cmd || return (__worker_trace)
     end
 
