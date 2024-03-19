@@ -44,7 +44,7 @@ export async function completeCommand(options: {
 			if (line.startsWith('complete ')) {
 				const [kind = '', label = '', ...parts] = line
 					.slice('complete '.length)
-					.split('\t');
+					.split(/(?<!\t)\t/g);
 
 				completions.push({
 					kind,
