@@ -12,7 +12,7 @@ const cannotBeActivatedMessage = new Message(
 );
 
 export function activate(_context: ExtensionContext) {
-	const reason = checkPlatformSupport();
+	const reason = checkPlatformSupport(output);
 
 	if (reason) {
 		void cannotBeActivatedMessage.show(reason);

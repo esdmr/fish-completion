@@ -1,5 +1,5 @@
 import {ProgressLocation, commands, window} from 'vscode';
-import {vscodeAbortController} from '../utils/abort.js';
+import {isAbortError, vscodeAbortController} from '../utils/abort.js';
 import {getFishPath} from '../utils/config.js';
 import {disposables} from '../utils/disposables.js';
 import {updateCompletions} from '../fish/update-completions.js';
@@ -44,15 +44,9 @@ const command: Parameters<typeof window.withProgress>[1] = async (
 			currentProgress += increment;
 		}
 	} catch (error) {
-		const string = String(error);
-
-		if (string.includes('AbortError')) {
-			output.warn('Aborted');
-			return;
-		}
-
-		output.error('Error: ' + string);
-		void failureMessage.show(string);
+		if (isAbortError(error)) return;
+		void failureMessage.show(String(error));
+		throw error;
 	} finally {
 		dispose();
 	}

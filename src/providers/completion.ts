@@ -7,7 +7,7 @@ import {
 	CompletionItemKind,
 	languages,
 } from 'vscode';
-import {vscodeAbortController} from '../utils/abort.js';
+import {isAbortError, vscodeAbortController} from '../utils/abort.js';
 import {getAssistantResult} from '../assistant.js';
 import {getFishPath, isAssistantEnabled} from '../utils/config.js';
 import {disposables} from '../utils/disposables.js';
@@ -56,14 +56,7 @@ const completionProvider: CompletionItemProvider = {
 			failureMessage.forget();
 			return completions.map((i) => getCompletionItem(i, range));
 		} catch (error) {
-			const string = String(error);
-
-			if (string.includes('AbortError')) {
-				output.warn('Aborted');
-				return;
-			}
-
-			output.error('Error: ' + string);
+			if (isAbortError(error)) return [];
 			void failureMessage.showOnce();
 			throw error;
 		} finally {
