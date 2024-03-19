@@ -94,5 +94,7 @@ export function getAssistantResult(document: TextDocument): AssistantResult {
 		return cached;
 	}
 
-	return (cached ?? new AssistantResult()).update(document);
+	const updated = (cached ?? new AssistantResult()).update(document);
+	cache.set(document, updated);
+	return updated;
 }
