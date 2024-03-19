@@ -49,7 +49,10 @@ const completionProvider: CompletionItemProvider = {
 			});
 
 			const range = new Range(
-				position.translate(0, -currentToken.length),
+				position.translate(
+					0,
+					-Math.min(currentToken.length, position.character),
+				),
 				position,
 			);
 
