@@ -23,5 +23,7 @@ export function vscodeAbortController(token: CancellationToken) {
 export function isAbortError(
 	error: unknown,
 ): error is DOMException & {name: 'AbortError'} {
-	return error instanceof DOMException && error.name === 'AbortError';
+	return (
+		error instanceof Error && 'name' in error && error.name === 'AbortError'
+	);
 }
