@@ -2,9 +2,9 @@ import type {LogOutputChannel} from 'vscode';
 import {startWorker} from './worker.js';
 
 export async function* updateCompletions(options: {
-	fishPath: string;
-	output?: LogOutputChannel | undefined;
-	signal?: AbortSignal | undefined;
+	readonly fishPath: string;
+	readonly output?: LogOutputChannel | undefined;
+	readonly signal?: AbortSignal | undefined;
 }) {
 	options.output?.info('Updating completions');
 
@@ -35,6 +35,6 @@ export async function* updateCompletions(options: {
 		state.total = Number(match.groups?.total);
 		state.current = String(match.groups?.current).trim();
 
-		yield state;
+		yield state as Readonly<typeof state>;
 	}
 }

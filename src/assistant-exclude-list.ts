@@ -1,4 +1,4 @@
-export const variableExcludeList = new Set([
+export const variableExcludeList: ReadonlySet<string> = new Set([
 	'argv',
 	'CMD_DURATION',
 	'COLUMNS',
@@ -74,7 +74,7 @@ export const variableExcludeList = new Set([
 	'__worker_normalized',
 ]);
 
-export const functionExcludeList = new Set([
+export const functionExcludeList: ReadonlySet<string> = new Set([
 	'fish',
 	'fish_indent',
 	'fish_update_completions',

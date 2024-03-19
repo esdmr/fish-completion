@@ -17,7 +17,7 @@ export function vscodeAbortController(token: CancellationToken) {
 		dispose() {
 			subscription.dispose();
 		},
-	};
+	} as const;
 }
 
 export function isAbortError(

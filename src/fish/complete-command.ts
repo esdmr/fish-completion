@@ -8,18 +8,18 @@ const textFile = join(temporaryDirectory, 'text');
 const commandFile = join(temporaryDirectory, 'cmd');
 
 export type ParsedCompletionItem = {
-	kind: string;
-	label: string;
-	description: string;
+	readonly kind: string;
+	readonly label: string;
+	readonly description: string;
 };
 
 export async function completeCommand(options: {
-	cwd: string;
-	fishPath: string;
-	assistantCommands: string;
-	text: string;
-	output?: LogOutputChannel | undefined;
-	signal?: AbortSignal | undefined;
+	readonly cwd: string;
+	readonly fishPath: string;
+	readonly assistantCommands: string;
+	readonly text: string;
+	readonly output?: LogOutputChannel | undefined;
+	readonly signal?: AbortSignal | undefined;
 }) {
 	options.output?.info('Requesting for completions');
 
@@ -56,7 +56,7 @@ export async function completeCommand(options: {
 			}
 		}
 
-		return {completions, currentToken};
+		return {completions, currentToken} as const;
 	} finally {
 		await Promise.all([
 			writeFile(textFile, ''),
