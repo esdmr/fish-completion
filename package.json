@@ -58,7 +58,7 @@
 		"onLanguage:fish"
 	],
 	"devDependencies": {
-		"@changesets/cli": "2.27.4",
+		"@changesets/cli": "2.27.5",
 		"@rollup/plugin-commonjs": "25.0.8",
 		"@rollup/plugin-node-resolve": "15.2.3",
 		"@types/node": "18.19.22",
