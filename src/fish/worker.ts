@@ -1,83 +1,124 @@
-import {mkdtempSync, rmSync} from 'node:fs';
-import {tmpdir} from 'node:os';
-import {join} from 'node:path';
 import {platform} from 'node:process';
 import {createInterface} from 'node:readline';
 import type {Readable} from 'node:stream';
-import {fileURLToPath} from 'node:url';
-import {execa, type ExecaChildProcess} from 'execa';
-import vscode from 'vscode';
-import {disposables} from '../disposables.js';
+import {join} from 'node:path';
+import {execa} from 'execa';
+import {type LogOutputChannel} from 'vscode';
+import {temporaryDirectory} from '../utils/fs.js';
 
-export const temporaryDirectory = mkdtempSync(
-	join(tmpdir(), 'fish-completion-'),
-);
+const stdio = [
+	'pipe', // 0 stdin
+	'pipe', // 1 stdout
+	'pipe', // 2 stderr
+	'ignore', // 3 unused
+	'ignore', // 4 unused
+	'ignore', // 5 unused
+	'ignore', // 6 unused
+	'ignore', // 7 unused
+	'ignore', // 8 unused
+	'pipe', // 9 output
+] as const;
 
-disposables.add(
-	new vscode.Disposable(() => {
-		rmSync(temporaryDirectory, {force: true, recursive: true});
-	}),
-);
+const commonEnv = {
+	/* eslint-disable @typescript-eslint/naming-convention */
+	TERM: 'dumb',
+	CHROME_DESKTOP: undefined,
+	EDITOR: undefined,
+	GIO_LAUNCHED_DESKTOP_FILE: undefined,
+	GIT_ASKPASS: undefined,
+	TERM_PROGRAM: undefined,
+	VISUAL: undefined,
+	VSCODE_GIT_ASKPASS_EXTRA_ARGS: undefined,
+	VSCODE_GIT_ASKPASS_MAIN: undefined,
+	VSCODE_GIT_ASKPASS_NODE: undefined,
+	VSCODE_GIT_IPC_HANDLE: undefined,
+	_FISH_COMPLETION_TEMP_DIR: temporaryDirectory,
+	_FISH_COMPLETION_WORKER: join(__dirname, 'worker.fish'),
+	/* eslint-enable @typescript-eslint/naming-convention */
+} as const;
 
-const safePath = /^(?:\/[\w.-]+)+$/;
+const defaultFishPath = 'fish';
+const defaultTimeout = 10_000;
+let lastId = 0;
 
-export function startWorker(options: {
-	cwd: string;
-	isAssistantEnabled?: boolean;
-	fishPath: string;
-	signal?: AbortSignal | undefined;
-	timeout?: number;
+export async function* startWorker(options: {
+	readonly cwd: string;
+	readonly fishPath: string;
+	readonly keyBind: string;
+	readonly isAssistantEnabled?: boolean | undefined;
+	readonly signal?: AbortSignal | undefined;
+	readonly timeout?: number | undefined;
+	readonly output?: LogOutputChannel | undefined;
 }) {
-	if (!safePath.test(options.fishPath)) {
-		options.fishPath = 'fish';
-	}
+	const id = ++lastId;
+	const fishPath = options.fishPath || defaultFishPath;
+	const command = getCommand(fishPath);
 
-	const command = getCommand(options.fishPath);
 	const child = execa(command[0], command.slice(1), {
-		stdio: [
-			'pipe', // 0 stdin
-			'pipe', // 1 stdout
-			'pipe', // 2 stderr
-			'ignore', // 3 unused
-			'ignore', // 4 unused
-			'ignore', // 5 unused
-			'ignore', // 6 unused
-			'ignore', // 7 unused
-			'ignore', // 8 unused
-			'pipe', // 9 output
-		],
+		stdio,
 		cwd: options.cwd,
 		env: {
+			...commonEnv,
 			/* eslint-disable @typescript-eslint/naming-convention */
-			TERM: 'dumb',
-			GIO_LAUNCHED_DESKTOP_FILE: undefined,
-			VISUAL: undefined,
-			CHROME_DESKTOP: undefined,
-			VSCODE_GIT_ASKPASS_NODE: undefined,
-			VSCODE_GIT_ASKPASS_MAIN: undefined,
-			TERM_PROGRAM: undefined,
-			GIT_ASKPASS: undefined,
-			VSCODE_GIT_IPC_HANDLE: undefined,
-			EDITOR: undefined,
-			VSCODE_GIT_ASKPASS_EXTRA_ARGS: undefined,
 			_FISH_COMPLETION_ASSIST: options.isAssistantEnabled
 				? 'v1'
 				: 'disabled',
-			_FISH_COMPLETION_TEMP_DIR: temporaryDirectory,
-			_FISH_COMPLETION_WORKER: fileURLToPath(
-				new URL('worker.fish', import.meta.url),
-			),
+			_FISH_COMPLETION_FISH: fishPath,
 			/* eslint-enable @typescript-eslint/naming-convention */
 		},
-		timeout: options.timeout ?? 10_000,
+		timeout: options.timeout ?? defaultTimeout,
 		signal: options.signal!,
 	});
 
-	return {
-		child,
-		inputChannel: child.stdin!,
-		outputChannel: (child.stdio as Readable[])[9]!,
-	};
+	if (options.output) {
+		const {output} = options;
+
+		output.info(`[${id}] Started`);
+		output.trace(
+			`[${id}] Options: ${JSON.stringify({...options, command, fishPath})}`,
+		);
+
+		for (const channel of ['stdout', 'stderr'] as const) {
+			const rl = createInterface(child[channel]!);
+
+			rl.on('line', (line) => {
+				output.trace(`[${id}] ${channel}: ${line}`);
+			});
+
+			rl.resume();
+		}
+	}
+
+	const rl = createInterface({
+		input: (child.stdio as Readable[])[9]!,
+		prompt: '',
+		signal: options.signal,
+	});
+
+	try {
+		let ready = false;
+
+		for await (const line of rl) {
+			if (!line.trim()) continue;
+			options.output?.trace(`[${id}] Line: ${line}`);
+
+			if (ready) {
+				yield line;
+			} else if (line.includes('ready')) {
+				options.output?.trace(`[${id}] stdin: ${options.keyBind}`);
+				child.stdin!.write(options.keyBind);
+				ready = true;
+			}
+		}
+
+		await child;
+		options.output?.trace(`[${id}] Done`);
+	} catch (error) {
+		options.output?.error(`[${id}] Failed: ${String(error)}`);
+		throw error;
+	} finally {
+		child.kill();
+	}
 }
 
 function getCommand(fishPath: string): [string, ...string[]] {
@@ -90,7 +131,7 @@ function getCommand(fishPath: string): [string, ...string[]] {
 				'-e',
 				'-q',
 				'-c',
-				`${fishPath} -iPC 'source $_FISH_COMPLETION_WORKER'`,
+				`"$_FISH_COMPLETION_FISH" -iPC 'source $_FISH_COMPLETION_WORKER'`,
 				'/dev/null',
 			];
 		}
@@ -120,26 +161,14 @@ function getCommand(fishPath: string): [string, ...string[]] {
 	}
 }
 
-export function checkPlatformSupport() {
+export function checkPlatformSupport(output?: LogOutputChannel) {
 	try {
+		output?.info(`Platform: ${platform}`);
 		getCommand('fish');
 		return undefined;
 	} catch (error) {
-		return (error as Error).message;
-	}
-}
-
-export function debugStdOutputAndError(
-	child: ExecaChildProcess,
-	output: vscode.LogOutputChannel,
-) {
-	for (const channel of ['stdout', 'stderr'] as const) {
-		const rl = createInterface(child[channel]!);
-
-		rl.on('line', (line) => {
-			output.trace(channel + ': ' + line);
-		});
-
-		rl.resume();
+		const {message} = error as Error;
+		output?.error(`Cannot activate: ${message}`);
+		return message;
 	}
 }

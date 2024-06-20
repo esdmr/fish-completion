@@ -1,11 +1,17 @@
-import vscode from 'vscode';
-import {vscodeAbortController} from '../abort.js';
-import {getFishPath} from '../config.js';
-import {disposables} from '../disposables.js';
+import {ProgressLocation, commands, window} from 'vscode';
+import {isAbortError, vscodeAbortController} from '../utils/abort.js';
+import {getFishPath} from '../utils/config.js';
+import {disposables} from '../utils/disposables.js';
 import {updateCompletions} from '../fish/update-completions.js';
-import {output} from '../output.js';
+import {output} from '../utils/output.js';
+import {Message} from '../utils/message.js';
 
-const command: Parameters<typeof vscode.window.withProgress>[1] = async (
+const failureMessage = new Message(
+	'error',
+	'Something gone wrong while updating fish completions',
+);
+
+const command: Parameters<typeof window.withProgress>[1] = async (
 	progress,
 	token,
 ) => {
@@ -22,34 +28,25 @@ const command: Parameters<typeof vscode.window.withProgress>[1] = async (
 	let currentProgress = 0;
 
 	try {
-		await updateCompletions({
+		for await (const state of updateCompletions({
 			fishPath: getFishPath(),
+			output,
 			signal,
-			callback(state) {
-				const percentage = (state.progress / state.total) * 100;
-				const increment = Math.max(percentage - currentProgress, 0);
+		})) {
+			const percentage = (state.progress / state.total) * 100;
+			const increment = Math.max(percentage - currentProgress, 0);
 
-				progress.report({
-					increment,
-					message: `${state.progress}/${state.total} - ${state.current}`,
-				});
+			progress.report({
+				increment,
+				message: `${state.progress}/${state.total} - ${state.current}`,
+			});
 
-				currentProgress += increment;
-			},
-		});
-	} catch (error) {
-		const string = String(error);
-
-		if (string.includes('AbortError')) {
-			output.warn('Aborted');
-			return;
+			currentProgress += increment;
 		}
-
-		output.error('Error: ' + string);
-
-		void vscode.window.showErrorMessage(
-			'Something gone wrong while updating fish completions.',
-		);
+	} catch (error) {
+		if (isAbortError(error)) return;
+		void failureMessage.show(String(error));
+		throw error;
 	} finally {
 		dispose();
 	}
@@ -57,12 +54,12 @@ const command: Parameters<typeof vscode.window.withProgress>[1] = async (
 
 export function registerUpdateCompletionsCommand() {
 	disposables.add(
-		vscode.commands.registerCommand(
+		commands.registerCommand(
 			'fish-completion.fish_update_completions',
 			() =>
-				vscode.window.withProgress(
+				window.withProgress(
 					{
-						location: vscode.ProgressLocation.Notification,
+						location: ProgressLocation.Notification,
 						cancellable: true,
 						title: 'Updating fish completions',
 					},
