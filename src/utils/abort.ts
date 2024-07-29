@@ -17,5 +17,13 @@ export function vscodeAbortController(token: CancellationToken) {
 		dispose() {
 			subscription.dispose();
 		},
-	};
+	} as const;
+}
+
+export function isAbortError(
+	error: unknown,
+): error is DOMException & {name: 'AbortError'} {
+	return (
+		error instanceof Error && 'name' in error && error.name === 'AbortError'
+	);
 }
