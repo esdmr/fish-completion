@@ -23,8 +23,8 @@ devDependencies:
     specifier: 1.82.0
     version: 1.82.0
   '@vscode/vsce':
-    specifier: 2.30.0
-    version: 2.30.0
+    specifier: 2.31.0
+    version: 2.31.0
   esbuild:
     specifier: 0.23.0
     version: 0.23.0
@@ -1181,8 +1181,8 @@ packages:
       '@vscode/vsce-sign-win32-x64': 2.0.2
     dev: true
 
-  /@vscode/vsce@2.30.0:
-    resolution: {integrity: sha512-MBYpXdCY1SCdc2u/y11kmJuSODKFyZRpeRTQq5p4rSg05QSjSy5pz6h/BGLNdSahgXfKRBATEkjAcJFdJuDz8Q==}
+  /@vscode/vsce@2.31.0:
+    resolution: {integrity: sha512-iZvx9Vn3E81BCwZUAFctQyVxJE09LJ/nLHLGVZmKB5Pjtn62EgjWfJupehmWGmRYMS6ViK+7q7ysNrjxNFhh1g==}
     engines: {node: '>= 16'}
     hasBin: true
     dependencies:
