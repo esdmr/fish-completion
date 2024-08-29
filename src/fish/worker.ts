@@ -5,7 +5,7 @@ import {platform} from 'node:process';
 import {createInterface} from 'node:readline';
 import type {Readable} from 'node:stream';
 import {fileURLToPath} from 'node:url';
-import {execa, type ExecaChildProcess} from 'execa';
+import {execa} from 'execa';
 import vscode from 'vscode';
 import {disposables} from '../disposables.js';
 
@@ -75,7 +75,7 @@ export function startWorker(options: {
 
 	return {
 		child,
-		inputChannel: child.stdin!,
+		inputChannel: child.stdin,
 		outputChannel: (child.stdio as Readable[])[9]!,
 	};
 }
@@ -129,12 +129,14 @@ export function checkPlatformSupport() {
 	}
 }
 
+export type WorkerProcess = ReturnType<typeof startWorker>['child'];
+
 export function debugStdOutputAndError(
-	child: ExecaChildProcess,
+	child: WorkerProcess,
 	output: vscode.LogOutputChannel,
 ) {
 	for (const channel of ['stdout', 'stderr'] as const) {
-		const rl = createInterface(child[channel]!);
+		const rl = createInterface(child[channel]);
 
 		rl.on('line', (line) => {
 			output.trace(channel + ': ' + line);
