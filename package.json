@@ -20,6 +20,7 @@
 		"changeset": "changeset",
 		"changeset:version": "changeset version",
 		"clean": "bash scripts/clean.sh",
+		"type-check": "tsc -p .",
 		"lint": "xo src rollup scripts",
 		"lint:fix": "pnpm run lint -- --fix",
 		"prepack": "node scripts/prepack.js",
@@ -58,19 +59,20 @@
 		"onLanguage:fish"
 	],
 	"devDependencies": {
-		"@changesets/cli": "2.27.1",
-		"@rollup/plugin-commonjs": "25.0.7",
+		"@changesets/cli": "2.27.7",
+		"@rollup/plugin-commonjs": "25.0.8",
 		"@rollup/plugin-node-resolve": "15.2.3",
 		"@types/node": "18.19.22",
 		"@types/vscode": "1.82.0",
-		"@vscode/vsce": "2.24.0",
-		"esbuild": "0.20.1",
-		"execa": "8.0.1",
-		"rollup": "4.12.1",
+		"@vscode/vsce": "2.31.1",
+		"esbuild": "0.23.0",
+		"execa": "9.3.0",
+		"rollup": "4.20.0",
 		"rollup-plugin-esbuild": "6.1.1",
-		"xo": "0.58.0"
+		"typescript": "5.5.4",
+		"xo": "0.59.3"
 	},
-	"packageManager": "pnpm@8.15.3",
+	"packageManager": "pnpm@8.15.9",
 	"engines": {
 		"node": ">=18",
 		"vscode": "^1.82.0"
@@ -89,6 +91,11 @@
 					}
 				}
 			}
+		},
+		"overrides": {
+			"braces@<3.0.3": "^3.0.3",
+			"@azure/msal-node@<2.9.2": "^2.9.2",
+			"@azure/identity@<4.2.1": "^4.2.1"
 		}
 	}
 }

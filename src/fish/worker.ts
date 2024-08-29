@@ -79,7 +79,7 @@ export async function* startWorker(options: {
 		);
 
 		for (const channel of ['stdout', 'stderr'] as const) {
-			const rl = createInterface(child[channel]!);
+			const rl = createInterface(child[channel]);
 
 			rl.on('line', (line) => {
 				output.trace(`[${id}] ${channel}: ${line}`);
@@ -106,7 +106,7 @@ export async function* startWorker(options: {
 				yield line;
 			} else if (line.includes('ready')) {
 				options.output?.trace(`[${id}] stdin: ${options.keyBind}`);
-				child.stdin!.write(options.keyBind);
+				child.stdin.write(options.keyBind);
 				ready = true;
 			}
 		}
