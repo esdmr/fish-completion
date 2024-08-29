@@ -33,5 +33,9 @@
 		"strictPropertyInitialization": true,
 		"useDefineForClassFields": true,
 		"useUnknownInCatchVariables": true
-	}
+	},
+	"exclude": [
+		"**/node_modules/",
+		"resources/"
+	]
 }

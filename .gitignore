@@ -7,3 +7,4 @@ resources/**/*.css
 resources/**/*.css.map
 resources/**/*.js
 resources/**/*.js.map
+*.tsbuildinfo

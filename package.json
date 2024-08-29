@@ -20,6 +20,7 @@
 		"changeset": "changeset",
 		"changeset:version": "changeset version",
 		"clean": "bash scripts/clean.sh",
+		"type-check": "tsc -p .",
 		"lint": "xo src rollup scripts",
 		"lint:fix": "pnpm run lint -- --fix",
 		"prepack": "node scripts/prepack.js",
@@ -68,6 +69,7 @@
 		"execa": "9.3.0",
 		"rollup": "4.20.0",
 		"rollup-plugin-esbuild": "6.1.1",
+		"typescript": "5.5.4",
 		"xo": "0.59.3"
 	},
 	"packageManager": "pnpm@8.15.9",

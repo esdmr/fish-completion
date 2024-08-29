@@ -37,6 +37,9 @@ devDependencies:
   rollup-plugin-esbuild:
     specifier: 6.1.1
     version: 6.1.1(esbuild@0.23.0)(rollup@4.20.0)
+  typescript:
+    specifier: 5.5.4
+    version: 5.5.4
   xo:
     specifier: 0.59.3
     version: 0.59.3
