@@ -13,6 +13,8 @@ export type ParsedCompletionItem = {
 	readonly description: string;
 };
 
+const columnSeparatorPattern = /(?<!\t)\t/g;
+
 export async function completeCommand(options: {
 	readonly cwd: string;
 	readonly fishPath: string;
@@ -44,7 +46,7 @@ export async function completeCommand(options: {
 			if (line.startsWith('complete ')) {
 				const [kind = '', label = '', ...parts] = line
 					.slice('complete '.length)
-					.split(/(?<!\t)\t/g);
+					.split(columnSeparatorPattern);
 
 				completions.push({
 					kind,

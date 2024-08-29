@@ -1,6 +1,9 @@
 import type {LogOutputChannel} from 'vscode';
 import {startWorker} from './worker.js';
 
+const updateProgressOutputPattern =
+	/^\s*(?<progress>\d+)\s*\/\s*(?<total>\d+)\s*:(?<current>.*)$/;
+
 export async function* updateCompletions(options: {
 	readonly fishPath: string;
 	readonly output?: LogOutputChannel | undefined;
@@ -22,10 +25,7 @@ export async function* updateCompletions(options: {
 		timeout: 500_000,
 		output: options.output,
 	})) {
-		const match =
-			/^\s*(?<progress>\d+)\s*\/\s*(?<total>\d+)\s*:(?<current>.*)$/.exec(
-				line,
-			);
+		const match = updateProgressOutputPattern.exec(line);
 
 		if (!match) {
 			continue;
