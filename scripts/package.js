@@ -1,15 +1,14 @@
 #!/usr/bin/env node
-import {execaCommand} from 'execa';
+import {execa as execa_} from 'execa';
 
-/** @type {import('execa').Options} */
-const options = {
+const execa = execa_({
 	stdio: 'inherit',
-};
+});
 
-await execaCommand('node scripts/prepack.js', options);
+await execa`node scripts/prepack.js`;
 
 try {
-	await execaCommand('pnpm exec vsce package --no-dependencies', options);
+	await execa`pnpm exec vsce package --no-dependencies`;
 } finally {
-	await execaCommand('node scripts/postpack.js', options);
+	await execa`node scripts/postpack.js`;
 }
