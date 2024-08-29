@@ -72,27 +72,21 @@ disposables.add(
 );
 
 function fixCache() {
-	const invalidKeys = [];
-
 	for (const key of cache.keys()) {
 		if (key.isClosed) {
-			invalidKeys.push(key);
+			cache.delete(key);
 		}
-	}
-
-	for (const key of invalidKeys) {
-		cache.delete(key);
 	}
 }
 
 export function getAssistantResult(document: TextDocument): AssistantResult {
-	fixCache();
-
 	const cached = cache.get(document);
 
 	if (cached?.version === document.version) {
 		return cached;
 	}
+
+	fixCache();
 
 	const updated = (cached ?? new AssistantResult()).update(document);
 	cache.set(document, updated);
