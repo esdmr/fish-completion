@@ -82,32 +82,17 @@ function getCompletionItem(
 	return completion;
 }
 
-function getCompletionKind(type: string | undefined): CompletionItemKind {
-	switch (type) {
-		case 'File': {
-			return CompletionItemKind.File;
-		}
+const completionKindMap: ReadonlyMap<string, CompletionItemKind> = new Map([
+	['File', CompletionItemKind.File],
+	['Folder', CompletionItemKind.Folder],
+	['Keyword', CompletionItemKind.Keyword],
+	['Function', CompletionItemKind.Function],
+	['Variable', CompletionItemKind.Variable],
+	['Text', CompletionItemKind.Text],
+]);
 
-		case 'Folder': {
-			return CompletionItemKind.Folder;
-		}
-
-		case 'Keyword': {
-			return CompletionItemKind.Keyword;
-		}
-
-		case 'Function': {
-			return CompletionItemKind.Function;
-		}
-
-		case 'Variable': {
-			return CompletionItemKind.Variable;
-		}
-
-		default: {
-			return CompletionItemKind.Text;
-		}
-	}
+function getCompletionKind(type: string): CompletionItemKind {
+	return completionKindMap.get(type) ?? CompletionItemKind.Text;
 }
 
 export function registerCompletionProvider() {
