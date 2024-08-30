@@ -1,0 +1,60 @@
+name: Deploy
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  deploy:
+    name: Deploy
+    strategy:
+      matrix:
+        node:
+          - '20'
+    runs-on: ubuntu-latest
+    environment: deploy
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e5e7e5ab8b370d6c329ec480221332ada57f0ab # v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@8c91899e586c5b171469028077307d293428b516 # v3
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Setup pnpm
+        run: |-
+          corepack enable
+          pnpm --version
+
+      - name: Set pnpm store-dir
+        run: pnpm config set store-dir ~/.pnpm-store
+
+      - name: Cache pnpm modules
+        uses: actions/cache@9b0c1fce7a93df8e3bb8926b0d6e9d89e92f20a7 # v3
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.OS }}-pnpm-current-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.OS }}-pnpm-current
+
+      - name: Install packages
+        run: pnpm install
+
+      - name: Package
+        run: pnpm run package --out fish-completion.vsix
+        env:
+          NODE_ENV: production
+
+      - name: Upload files to a GitHub release
+        uses: svenstaro/upload-release-action@2.7.0
+        with:
+          file: fish-completion.vsix
+          tag: ${{ github.ref }}
+
+      - name: Publish
+        run: pnpm run vsce publish --no-dependencies -i fish-completion.vsix
+        env:
+          VSCE_PAT: ${{ secrets.VSCE_PAT }}

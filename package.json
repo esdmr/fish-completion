@@ -62,7 +62,7 @@
 		"@changesets/cli": "2.27.7",
 		"@rollup/plugin-commonjs": "25.0.8",
 		"@rollup/plugin-node-resolve": "15.2.3",
-		"@types/node": "18.19.22",
+		"@types/node": "20.16.2",
 		"@types/vscode": "1.82.0",
 		"@vscode/vsce": "2.31.1",
 		"esbuild": "0.23.0",
@@ -74,7 +74,7 @@
 	},
 	"packageManager": "pnpm@8.15.9",
 	"engines": {
-		"node": ">=18",
+		"node": ">=20",
 		"vscode": "^1.82.0"
 	},
 	"capabilities": {
