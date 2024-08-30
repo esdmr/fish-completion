@@ -55,6 +55,6 @@ jobs:
           tag: ${{ github.ref }}
 
       - name: Publish
-        run: pnpm run vsce publish --no-dependencies -i fish-completion.vsix
+        run: pnpm exec vsce publish --no-dependencies -i fish-completion.vsix
         env:
           VSCE_PAT: ${{ secrets.VSCE_PAT }}
