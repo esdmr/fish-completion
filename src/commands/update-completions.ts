@@ -44,7 +44,7 @@ const command: Parameters<typeof window.withProgress>[1] = async (
 				message: `${state.progress}/${state.total} - ${state.current}`,
 			});
 
-			currentProgress += increment;
+			currentProgress = percentage;
 		}
 	} catch (error) {
 		if (isAbortError(error)) return;
