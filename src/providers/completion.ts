@@ -26,13 +26,15 @@ const failureMessage = new Message(
 
 const completionProvider: CompletionItemProvider = {
 	async provideCompletionItems(document, position, token) {
-		if (token.isCancellationRequested) {
-			return;
-		}
-
-		const {signal, dispose} = vscodeAbortController(token);
+		let abort;
 
 		try {
+			if (token.isCancellationRequested) {
+				return;
+			}
+
+			abort = vscodeAbortController(token);
+
 			const assistantCommands = isAssistantEnabled(document)
 				? getAssistantResult(document).getCommands()
 				: '';
@@ -45,7 +47,7 @@ const completionProvider: CompletionItemProvider = {
 				assistantCommands,
 				text,
 				output,
-				signal,
+				signal: abort.signal,
 			});
 
 			const range = new Range(
@@ -63,7 +65,7 @@ const completionProvider: CompletionItemProvider = {
 			void failureMessage.showOnce();
 			throw error;
 		} finally {
-			dispose();
+			abort?.dispose();
 		}
 	},
 };

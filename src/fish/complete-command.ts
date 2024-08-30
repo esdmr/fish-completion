@@ -2,6 +2,7 @@ import {writeFile} from 'node:fs/promises';
 import {join} from 'node:path';
 import type {LogOutputChannel} from 'vscode';
 import {temporaryDirectory} from '../utils/fs.js';
+import {allSettledAggregate} from '../utils/promise.js';
 import {startWorker} from './worker.js';
 
 const textFile = join(temporaryDirectory, 'text');
@@ -23,14 +24,14 @@ export async function completeCommand(options: {
 	readonly output?: LogOutputChannel | undefined;
 	readonly signal?: AbortSignal | undefined;
 }) {
-	options.output?.info('Requesting for completions');
-
-	await Promise.all([
-		writeFile(textFile, options.text),
-		writeFile(commandFile, options.assistantCommands),
-	]);
-
 	try {
+		options.output?.info('Requesting for completions');
+
+		await allSettledAggregate([
+			writeFile(textFile, options.text),
+			writeFile(commandFile, options.assistantCommands),
+		]);
+
 		let currentToken = '';
 
 		const completions: ParsedCompletionItem[] = [];
@@ -60,7 +61,7 @@ export async function completeCommand(options: {
 
 		return {completions, currentToken} as const;
 	} finally {
-		await Promise.all([
+		await allSettledAggregate([
 			writeFile(textFile, ''),
 			writeFile(commandFile, ''),
 		]);

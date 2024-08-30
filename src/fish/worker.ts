@@ -52,51 +52,53 @@ export async function* startWorker(options: {
 	readonly output?: LogOutputChannel | undefined;
 }) {
 	const id = ++lastId;
-	const fishPath = options.fishPath || defaultFishPath;
-	const command = getCommand(fishPath);
-
-	const child = execa(command[0], command.slice(1), {
-		stdio,
-		cwd: options.cwd,
-		env: {
-			...commonEnv,
-			/* eslint-disable @typescript-eslint/naming-convention */
-			_FISH_COMPLETION_ASSIST: options.isAssistantEnabled
-				? 'v1'
-				: 'disabled',
-			_FISH_COMPLETION_FISH: fishPath,
-			/* eslint-enable @typescript-eslint/naming-convention */
-		},
-		timeout: options.timeout ?? defaultTimeout,
-		cancelSignal: options.signal!,
-	} satisfies Options);
-
-	if (options.output) {
-		const {output} = options;
-
-		output.info(`[${id}] Started`);
-		output.debug(
-			`[${id}] Options: ${inspect({...options, output: Boolean(options.output), command, fishPath})}`,
-		);
-
-		for (const channel of ['stdout', 'stderr'] as const) {
-			const rl = createInterface(child[channel]);
-
-			rl.on('line', (line) => {
-				output.trace(`[${id}] ${channel}: ${line}`);
-			});
-
-			rl.resume();
-		}
-	}
-
-	const rl = createInterface({
-		input: (child.stdio as Readable[])[9]!,
-		prompt: '',
-		signal: options.signal,
-	});
+	let child;
 
 	try {
+		const fishPath = options.fishPath || defaultFishPath;
+		const command = getCommand(fishPath);
+
+		child = execa(command[0], command.slice(1), {
+			stdio,
+			cwd: options.cwd,
+			env: {
+				...commonEnv,
+				/* eslint-disable @typescript-eslint/naming-convention */
+				_FISH_COMPLETION_ASSIST: options.isAssistantEnabled
+					? 'v1'
+					: 'disabled',
+				_FISH_COMPLETION_FISH: fishPath,
+				/* eslint-enable @typescript-eslint/naming-convention */
+			},
+			timeout: options.timeout ?? defaultTimeout,
+			cancelSignal: options.signal!,
+		} satisfies Options);
+
+		if (options.output) {
+			const {output} = options;
+
+			output.info(`[${id}] Started`);
+			output.debug(
+				`[${id}] Options: ${inspect({...options, output: Boolean(options.output), command, fishPath})}`,
+			);
+
+			for (const channel of ['stdout', 'stderr'] as const) {
+				const rl = createInterface(child[channel]);
+
+				rl.on('line', (line) => {
+					output.trace(`[${id}] ${channel}: ${line}`);
+				});
+
+				rl.resume();
+			}
+		}
+
+		const rl = createInterface({
+			input: (child.stdio as Readable[])[9]!,
+			prompt: '',
+			signal: options.signal,
+		});
+
 		let ready = false;
 
 		for await (const line of rl) {
@@ -118,7 +120,7 @@ export async function* startWorker(options: {
 		options.output?.error(`[${id}] Failed: ${inspect(error)}`);
 		throw error;
 	} finally {
-		child.kill();
+		child?.kill();
 	}
 }
 

@@ -16,23 +16,25 @@ const command: Parameters<typeof window.withProgress>[1] = async (
 	progress,
 	token,
 ) => {
-	if (token.isCancellationRequested) {
-		return;
-	}
-
-	const {signal, dispose} = vscodeAbortController(token);
-
-	progress.report({
-		increment: 0,
-	});
-
-	let currentProgress = 0;
+	let abort;
 
 	try {
+		if (token.isCancellationRequested) {
+			return;
+		}
+
+		abort = vscodeAbortController(token);
+
+		progress.report({
+			increment: 0,
+		});
+
+		let currentProgress = 0;
+
 		for await (const state of updateCompletions({
 			fishPath: getFishPath(),
 			output,
-			signal,
+			signal: abort.signal,
 		})) {
 			const percentage = (state.progress / state.total) * 100;
 			const increment = Math.max(percentage - currentProgress, 0);
@@ -49,7 +51,7 @@ const command: Parameters<typeof window.withProgress>[1] = async (
 		void failureMessage.show(inspect(error));
 		throw error;
 	} finally {
-		dispose();
+		abort?.dispose();
 	}
 };
 
