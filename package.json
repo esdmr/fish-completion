@@ -1,7 +1,7 @@
 {
 	"name": "fish-completion",
 	"displayName": "Fish completion",
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"description": "Intellisense for fish scripts",
 	"categories": [
 		"Other"

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.2
+
+### Patch Changes
+
+- e8fc5de: Lift the requirement for fish path
+- e8fc5de: Improve logging and error handling
+- 5d5d261: Replace vsce with @vscode/vsce
+- ea8d78c: Enable log mode for the output. You can use `Developer: Set log level…` to customize its verbosity.
+
 ## 0.2.1
 
 ### Patch Changes
