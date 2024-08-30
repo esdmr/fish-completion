@@ -1,3 +1,4 @@
+import {ExecaError} from 'execa';
 import type {CancellationToken} from 'vscode';
 
 export function vscodeAbortController(token: CancellationToken) {
@@ -20,10 +21,11 @@ export function vscodeAbortController(token: CancellationToken) {
 	} as const;
 }
 
-export function isAbortError(
-	error: unknown,
-): error is DOMException & {name: 'AbortError'} {
+export function isAbortError(error: unknown): boolean {
 	return (
-		error instanceof Error && 'name' in error && error.name === 'AbortError'
+		(error instanceof Error &&
+			'name' in error &&
+			error.name === 'AbortError') ||
+		(error instanceof ExecaError && error.isCanceled)
 	);
 }
