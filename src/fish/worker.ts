@@ -2,7 +2,7 @@ import {platform} from 'node:process';
 import {createInterface} from 'node:readline';
 import type {Readable} from 'node:stream';
 import {join} from 'node:path';
-import {execa} from 'execa';
+import {execa, type Options} from 'execa';
 import {type LogOutputChannel} from 'vscode';
 import {temporaryDirectory} from '../utils/fs.js';
 import {inspect} from '../utils/inspect.js';
@@ -68,8 +68,8 @@ export async function* startWorker(options: {
 			/* eslint-enable @typescript-eslint/naming-convention */
 		},
 		timeout: options.timeout ?? defaultTimeout,
-		signal: options.signal!,
-	});
+		cancelSignal: options.signal!,
+	} satisfies Options);
 
 	if (options.output) {
 		const {output} = options;
