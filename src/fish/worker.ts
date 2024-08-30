@@ -5,6 +5,7 @@ import {join} from 'node:path';
 import {execa} from 'execa';
 import {type LogOutputChannel} from 'vscode';
 import {temporaryDirectory} from '../utils/fs.js';
+import {inspect} from '../utils/inspect.js';
 
 const stdio = [
 	'pipe', // 0 stdin
@@ -74,8 +75,8 @@ export async function* startWorker(options: {
 		const {output} = options;
 
 		output.info(`[${id}] Started`);
-		output.trace(
-			`[${id}] Options: ${JSON.stringify({...options, command, fishPath})}`,
+		output.debug(
+			`[${id}] Options: ${inspect({...options, output: Boolean(options.output), command, fishPath})}`,
 		);
 
 		for (const channel of ['stdout', 'stderr'] as const) {
@@ -112,9 +113,9 @@ export async function* startWorker(options: {
 		}
 
 		await child;
-		options.output?.trace(`[${id}] Done`);
+		options.output?.debug(`[${id}] Done`);
 	} catch (error) {
-		options.output?.error(`[${id}] Failed: ${String(error)}`);
+		options.output?.error(`[${id}] Failed: ${inspect(error)}`);
 		throw error;
 	} finally {
 		child.kill();
@@ -167,8 +168,7 @@ export function checkPlatformSupport(output?: LogOutputChannel) {
 		getCommand('fish');
 		return undefined;
 	} catch (error) {
-		const {message} = error as Error;
-		output?.error(`Cannot activate: ${message}`);
-		return message;
+		output?.error(`Cannot activate: ${inspect(error)}`);
+		return String(error);
 	}
 }

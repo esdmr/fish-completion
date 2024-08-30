@@ -5,6 +5,7 @@ import {disposables} from '../utils/disposables.js';
 import {updateCompletions} from '../fish/update-completions.js';
 import {output} from '../utils/output.js';
 import {Message} from '../utils/message.js';
+import {inspect} from '../utils/inspect.js';
 
 const failureMessage = new Message(
 	'error',
@@ -45,7 +46,7 @@ const command: Parameters<typeof window.withProgress>[1] = async (
 		}
 	} catch (error) {
 		if (isAbortError(error)) return;
-		void failureMessage.show(String(error));
+		void failureMessage.show(inspect(error));
 		throw error;
 	} finally {
 		dispose();
