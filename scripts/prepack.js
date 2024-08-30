@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import fs from 'node:fs/promises';
 import process from 'node:process';
-import {execaCommand} from 'execa';
+import {execa as execa_} from 'execa';
 
 /**
  * @param {Record<string, any>} packageMeta
@@ -19,19 +19,25 @@ function processPackageJson(packageMeta) {
 	return packageMeta;
 }
 
-/** @type {import('execa').Options} */
-const options = {
+const isProduction = process.env.NODE_ENV === 'production';
+
+const execa = execa_({
 	stdio: 'inherit',
-};
+});
 
 console.log('pnpm install');
-await execaCommand('pnpm install --prod=false', options);
+await execa`pnpm install --prod=false`;
 
 console.log('pnpm run build');
-await execaCommand('pnpm run build', options);
+await execa`pnpm run build`;
 
-console.log('pnpm run lint');
-await execaCommand('pnpm run lint', options);
+if (isProduction) {
+	console.log('pnpm run lint');
+	await execa`pnpm run lint`;
+
+	console.log('pnpm run type-check');
+	await execa`pnpm run type-check`;
+}
 
 const packageJson = await fs.readFile('package.json', 'utf8');
 const newPackageJson = JSON.stringify(

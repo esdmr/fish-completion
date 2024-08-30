@@ -1,73 +1,40 @@
-import {createInterface} from 'node:readline';
-import {output} from '../output.js';
-import {debugStdOutputAndError, startWorker} from './worker.js';
+import type {LogOutputChannel} from 'vscode';
+import {startWorker} from './worker.js';
 
-export async function updateCompletions(options: {
-	fishPath: string;
-	signal?: AbortSignal;
-	callback: (state: {
-		readonly progress: number;
-		readonly total: number;
-		readonly current: string;
-	}) => void;
+const updateProgressOutputPattern =
+	/^\s*(?<progress>\d+)\s*\/\s*(?<total>\d+)\s*:(?<current>.*)$/;
+
+export async function* updateCompletions(options: {
+	readonly fishPath: string;
+	readonly output?: LogOutputChannel | undefined;
+	readonly signal?: AbortSignal | undefined;
 }) {
+	options.output?.info('Updating completions');
+
 	const state = {
 		progress: 0,
 		total: 1,
 		current: 'Updating…',
 	};
 
-	const {child, inputChannel, outputChannel} = startWorker({
+	for await (const line of startWorker({
 		cwd: '/',
 		fishPath: options.fishPath,
+		keyBind: 'u',
 		signal: options.signal,
 		timeout: 500_000,
-	});
-
-	const rl = createInterface(outputChannel);
-	output.info('Updating completions');
-
-	rl.on('line', (line) => {
-		if (!line.trim()) {
-			return;
-		}
-
-		output.trace('Line: ' + line);
-
-		if (line.includes('ready')) {
-			inputChannel.write('u');
-			return;
-		}
-
-		const match =
-			/^\s*(?<progress>\d+)\s*\/\s*(?<total>\d+)\s*:\s*(?<current>.+?)\s*$/.exec(
-				line,
-			);
+		output: options.output,
+	})) {
+		const match = updateProgressOutputPattern.exec(line);
 
 		if (!match) {
-			return;
+			continue;
 		}
 
 		state.progress = Number(match.groups?.progress);
 		state.total = Number(match.groups?.total);
-		state.current = String(match.groups?.current);
+		state.current = String(match.groups?.current).trim();
 
-		options.callback(state);
-	});
-
-	rl.resume();
-	debugStdOutputAndError(child, output);
-
-	try {
-		await child;
-	} catch (error) {
-		if (String(error).includes('Command failed')) {
-			output.error('Failure: ' + String(error));
-			return;
-		}
-
-		throw error;
+		yield state as Readonly<typeof state>;
 	}
-
-	output.info('Done');
 }

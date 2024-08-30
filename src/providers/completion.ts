@@ -1,133 +1,104 @@
 import {dirname} from 'node:path';
-import vscode from 'vscode';
-import {vscodeAbortController} from '../abort.js';
+import {
+	Position,
+	type CompletionItemProvider,
+	Range,
+	CompletionItem,
+	CompletionItemKind,
+	languages,
+} from 'vscode';
+import {isAbortError, vscodeAbortController} from '../utils/abort.js';
 import {getAssistantResult} from '../assistant.js';
-import {getFishPath, isAssistantEnabled} from '../config.js';
-import {disposables} from '../disposables.js';
-import {completeCommand} from '../fish/complete-command.js';
-import {output} from '../output.js';
+import {getFishPath, isAssistantEnabled} from '../utils/config.js';
+import {disposables} from '../utils/disposables.js';
+import {
+	completeCommand,
+	type ParsedCompletionItem,
+} from '../fish/complete-command.js';
+import {output} from '../utils/output.js';
+import {Message} from '../utils/message.js';
 
-const startOfDocument = new vscode.Position(0, 0);
-let errorMessageSent = false;
+const startOfDocument = new Position(0, 0);
+const failureMessage = new Message(
+	'error',
+	'Something gone wrong while fetching completions',
+);
 
-const completionProvider: vscode.CompletionItemProvider = {
+const completionProvider: CompletionItemProvider = {
 	async provideCompletionItems(document, position, token) {
-		if (token.isCancellationRequested) {
-			return;
-		}
-
-		const {signal, dispose} = vscodeAbortController(token);
+		let abort;
 
 		try {
+			if (token.isCancellationRequested) {
+				return;
+			}
+
+			abort = vscodeAbortController(token);
+
 			const assistantCommands = isAssistantEnabled(document)
 				? getAssistantResult(document).getCommands()
 				: '';
 
-			const text = document.getText(
-				new vscode.Range(startOfDocument, position),
-			);
+			const text = document.getText(new Range(startOfDocument, position));
 
 			const {completions, currentToken} = await completeCommand({
 				cwd: dirname(document.uri.fsPath),
 				fishPath: getFishPath(document),
 				assistantCommands,
 				text,
-				signal,
+				output,
+				signal: abort.signal,
 			});
 
-			return completions.map((item) => {
-				const [type, label = '', ...parts] = item.split('\t');
-				const kind = getCompletionKind(type);
+			const range = new Range(
+				position.translate(
+					0,
+					-Math.min(currentToken.length, position.character),
+				),
+				position,
+			);
 
-				return getCompletionItem({
-					label,
-					description: parts.join('\t'),
-					kind,
-					position,
-					currentToken,
-				});
-			});
+			failureMessage.forget();
+			return completions.map((i) => getCompletionItem(i, range));
 		} catch (error) {
-			const string = String(error);
-
-			if (string.includes('AbortError')) {
-				output.warn('Aborted');
-				return;
-			}
-
-			output.error('Error: ' + string);
-
-			if (!errorMessageSent) {
-				void vscode.window.showErrorMessage(
-					'Something gone wrong while fetching completions.',
-				);
-
-				errorMessageSent = true;
-			}
-
+			if (isAbortError(error)) return [];
+			void failureMessage.showOnce();
 			throw error;
 		} finally {
-			dispose();
+			abort?.dispose();
 		}
 	},
 };
 
-function getCompletionItem(options: {
-	label: string;
-	description: string;
-	kind: vscode.CompletionItemKind;
-	position: vscode.Position;
-	currentToken: string;
-}) {
-	const completion = new vscode.CompletionItem(
-		{
-			label: options.label,
-			description: options.description,
-		},
-		options.kind,
+function getCompletionItem(
+	{kind, label, description}: ParsedCompletionItem,
+	range: Range,
+) {
+	const completion = new CompletionItem(
+		{label, description},
+		getCompletionKind(kind),
 	);
 
-	completion.range = new vscode.Range(
-		options.position.translate(0, -options.currentToken.length),
-		options.position,
-	);
+	completion.range = range;
 
 	return completion;
 }
 
-function getCompletionKind(type: string | undefined) {
-	switch (type) {
-		case 'File': {
-			return vscode.CompletionItemKind.File;
-		}
+const completionKindMap: ReadonlyMap<string, CompletionItemKind> = new Map([
+	['File', CompletionItemKind.File],
+	['Folder', CompletionItemKind.Folder],
+	['Keyword', CompletionItemKind.Keyword],
+	['Function', CompletionItemKind.Function],
+	['Variable', CompletionItemKind.Variable],
+	['Text', CompletionItemKind.Text],
+]);
 
-		case 'Folder': {
-			return vscode.CompletionItemKind.Folder;
-		}
-
-		case 'Keyword': {
-			return vscode.CompletionItemKind.Keyword;
-		}
-
-		case 'Function': {
-			return vscode.CompletionItemKind.Function;
-		}
-
-		case 'Variable': {
-			return vscode.CompletionItemKind.Variable;
-		}
-
-		default: {
-			return vscode.CompletionItemKind.Text;
-		}
-	}
+function getCompletionKind(type: string): CompletionItemKind {
+	return completionKindMap.get(type) ?? CompletionItemKind.Text;
 }
 
 export function registerCompletionProvider() {
 	disposables.add(
-		vscode.languages.registerCompletionItemProvider(
-			'fish',
-			completionProvider,
-		),
+		languages.registerCompletionItemProvider('fish', completionProvider),
 	);
 }
