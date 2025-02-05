@@ -94,7 +94,7 @@
 		},
 		"overrides": {
 			"braces@<3.0.3": "^3.0.3",
-			"@azure/msal-node@<2.9.2": "^2.9.2",
+			"@azure/msal-node@<2.9.2": "^3.0.0",
 			"@azure/identity@<4.2.1": "^4.2.1"
 		}
 	}
